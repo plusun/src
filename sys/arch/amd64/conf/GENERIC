@@ -719,7 +719,7 @@ options 	ATADEBUG
 # 0x0fac means 'use PIO mode 4, DMA mode 2, disable UltraDMA'.
 # (0xc=1100, 0xa=1010, 0xf=1111)
 # 0x0000 means "use whatever the drive claims to support".
-wd*	at atabus? drive ? flags 0x0000
+wd*	at atabus? drive ? flags 0x0fac
 
 # ATAPI bus support
 atapibus* at atapi?
