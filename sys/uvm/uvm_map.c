@@ -4972,7 +4972,7 @@ fill_vmentries(struct lwp *l, pid_t pid, u_int elem_size, void *oldp,
 		return EINVAL;
 
 	if (oldp) {
-		if (*oldlenp > 1024 * 1024)
+		if (*oldlenp > 10 * 1024 * 1024)
 			return E2BIG;
 		count = *oldlenp / elem_size;
 		if (count == 0)
