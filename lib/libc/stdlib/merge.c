@@ -101,9 +101,7 @@ static void insertionsort(u_char *, size_t, size_t,
  */
 /* Assumption: PSIZE is a power of 2. */
 #define EVAL(p) ((u_char **)(void *)					\
-    ((u_char *)0 +							\
-    (((u_char *)(void *)(p) + PSIZE - 1 - (u_char *) 0) & ~(PSIZE - 1))))
-
+    (((u_char *)(void *)(p) + PSIZE - 1 - (u_char *) 0) & ~(PSIZE - 1)))
 /*
  * Arguments are as for qsort.
  */

@@ -85,9 +85,9 @@ struct srcpos {
 		if (N) {							\
 			(Current).first_line = YYRHSLOC(Rhs, 1).first_line;	\
 			(Current).first_column = YYRHSLOC(Rhs, 1).first_column;	\
-			(Current).last_line = YYRHSLOC(Rhs, N).last_line;	\
-			(Current).last_column  = YYRHSLOC (Rhs, N).last_column;	\
-			(Current).file = YYRHSLOC(Rhs, N).file;			\
+			(Current).last_line = YYRHSLOC(Rhs, N-1).last_line;	\
+			(Current).last_column  = YYRHSLOC (Rhs, N-1).last_column;	\
+			(Current).file = YYRHSLOC(Rhs, N-1).file;			\
 		} else {							\
 			(Current).first_line = (Current).last_line =		\
 				YYRHSLOC(Rhs, 0).last_line;			\

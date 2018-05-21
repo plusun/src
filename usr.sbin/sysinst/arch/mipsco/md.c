@@ -165,7 +165,7 @@ md_post_newfs(void)
 	if (run_program(RUN_DISPLAY | RUN_NO_CLEAR,
 	    "/usr/mdec/installboot /dev/r%sc /usr/mdec/bootxx_ffs", pm->diskdev))
 		process_menu(MENU_ok,
-			deconst("Warning: disk is probably not bootable"));
+			__UNCONST("Warning: disk is probably not bootable"));
 	return 0;
 }
 

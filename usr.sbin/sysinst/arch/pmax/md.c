@@ -173,7 +173,7 @@ md_post_newfs(void)
 
 	if (error != 0)
 		process_menu(MENU_ok,
-		    deconst("Warning: disk is probably not bootable"));
+		    __UNCONST("Warning: disk is probably not bootable"));
 
 	return 0;
 }

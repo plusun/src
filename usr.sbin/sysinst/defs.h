@@ -45,12 +45,6 @@
 
 const char *getfslabelname(uint8_t);
 
-static inline void *
-deconst(const void *p)
-{
-	return (char *)0 + ((const char *)p - (const char *)0);
-}
-
 #include "msg_defs.h"
 #include "menu_defs.h"
 

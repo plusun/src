@@ -280,7 +280,7 @@ md_post_newfs(void)
 	    "/usr/mdec/installboot.new /usr/mdec/sdboot_ufs /dev/r%sa",
 	    pm->diskdev))
 		process_menu(MENU_ok,
-			deconst("Warning: disk is probably not bootable"));
+			__UNCONST("Warning: disk is probably not bootable"));
 	return 0;
 }
 

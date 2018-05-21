@@ -251,7 +251,7 @@ md_check_partitions(void)
 	free(bootxx);
 	if (rval == 0)
 		return 1;
-	process_menu(MENU_ok, deconst(MSG_No_Bootcode));
+	process_menu(MENU_ok, __UNCONST(MSG_No_Bootcode));
 	return 0;
 }
 
@@ -362,7 +362,7 @@ md_post_newfs(void)
                                                                                 
         if (ret != 0)                                                         
                 process_menu(MENU_ok,                                           
-                    deconst("Warning: disk is probably not bootable"));         
+                    __UNCONST("Warning: disk is probably not bootable"));         
 
 	return ret;
 }

@@ -1724,7 +1724,7 @@ ask_yesno(const char* msgtxt)
 {
 	arg_rv p;
 
-	p.arg = deconst(msgtxt);
+	p.arg = __UNCONST(msgtxt);
 	p.rv = -1;
 
 	process_menu(MENU_yesno, &p);
@@ -1736,7 +1736,7 @@ ask_noyes(const char *msgtxt)
 {
 	arg_rv p;
 
-	p.arg = deconst(msgtxt);
+	p.arg = __UNCONST(msgtxt);
 	p.rv = -1;
 
 	process_menu(MENU_noyes, &p);

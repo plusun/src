@@ -964,7 +964,7 @@ get_via_ftp(const char *xfer_type)
 	arg_rv arg;
 
 	arg.rv = -1;
-	arg.arg = deconst(xfer_type);
+	arg.arg = __UNCONST(xfer_type);
 	process_menu(MENU_ftpsource, &arg);
 	
 	if (arg.rv == SET_RETRY)
