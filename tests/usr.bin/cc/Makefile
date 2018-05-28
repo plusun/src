@@ -17,5 +17,15 @@ TESTS_SH+=	t_ubsan_int_neg_overflow
 TESTS_SH+=	t_ubsan_int_divzero
 TESTS_SH+=	t_ubsan_vla_out_of_bounds
 TESTS_SH+=	t_hello
+TESTS_SH+=      t_msan_allocated_memory
+TESTS_SH+=      t_msan_check_mem
+TESTS_SH+=      t_msan_free
+TESTS_SH+=      t_msan_heap
+TESTS_SH+=      t_msan_partial_poison
+TESTS_SH+=      t_msan_poison
+TESTS_SH+=      t_msan_realloc
+TESTS_SH+=      t_msan_shadow
+TESTS_SH+=      t_msan_stack
+TESTS_SH+=      t_msan_unpoison
 
 .include <bsd.test.mk>
