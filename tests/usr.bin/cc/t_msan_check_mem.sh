@@ -2,7 +2,7 @@
 # All rights reserved.
 #
 # This code is derived from software contributed to The NetBSD Foundation
-# by Harry Pantazis.
+# by Yang Zheng.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -28,39 +28,37 @@
 
 test_target()
 {
-	SUPPORT='n'
-	if uname -m | grep -q "amd64"; then
-		SUPPORT='y'
-	fi
+        SUPPORT='n'
+        if uname -m | grep -q "amd64" && command -v clang >/dev/null 2>&1; then
+                # only clang with major version newer than 7 is supported
+                CLANG_MAJOR=`echo major: __clang_major__ | clang -E - | grep major: | grep -o '[[:digit:]]'`
+                if [ "$CLANG_MAJOR" -ge "7" ]; then
+                        SUPPORT='y'
+                fi
+        fi
 }
 
 atf_test_case check_mem
 check_mem_head() {
 	atf_set "descr" "Test memory sanitizer for __msan_check_mem_is_initialized interface"
-	atf_set "require.progs" "cc"
+	atf_set "require.progs" "clang paxctl"
 }
 
 atf_test_case check_mem_profile
 check_mem_profile_head() {
 	atf_set "descr" "Test memory sanitizer for __msan_check_mem_is_initialized with profiling option"
-	atf_set "require.progs" "cc"
+	atf_set "require.progs" "clang paxctl"
 }
 atf_test_case check_mem_pic
 check_mem_pic_head() {
 	atf_set "descr" "Test memory sanitizer for __msan_check_mem_is_initialized with position independent code (PIC) flag"
-	atf_set "require.progs" "cc"
+	atf_set "require.progs" "clang paxctl"
 }
 atf_test_case check_mem_pie
 check_mem_pie_head() {
 	atf_set "descr" "Test memory sanitizer for __msan_check_mem_is_initialized with position independent execution (PIE) flag"
-	atf_set "require.progs" "cc"
+	atf_set "require.progs" "clang paxctl"
 }
-atf_test_case check_mem32
-check_mem32_head() {
-	atf_set "descr" "Test memory sanitizer for __msan_check_mem_is_initialized in NetBSD_32 emulation"
-	atf_set "require.progs" "cc file diff cat"
-}
-
 
 check_mem_body(){
 	cat > test.c << EOF
@@ -75,7 +73,8 @@ int main(int argc, char **argv) {
 }
 EOF
 
-	cc -fsanitize=memory -o test test.c
+	clang -fsanitize=memory -o test test.c
+	paxctl +a test
 	atf_check -s ignore -o ignore -e match:"Uninitialized bytes in __msan_check_mem_is_initialized at offset 0 inside" ./test
 }
 
@@ -92,7 +91,8 @@ int main(int argc, char **argv) {
 }
 EOF
 
-	cc -fsanitize=memory -o test -pg test.c 
+	clang -fsanitize=memory -o test -pg test.c
+	paxctl +a test
 	atf_check -s ignore -o ignore -e match:"Uninitialized bytes in __msan_check_mem_is_initialized at offset 0 inside" ./test
 }
 
@@ -116,8 +116,9 @@ int help(int argc) {
 }
 EOF
 
-	cc -fsanitize=memory -fPIC -shared -o libtest.so pic.c
-	cc -o test test.c -fsanitize=memory -L. -ltest
+	clang -fsanitize=memory -fPIC -shared -o libtest.so pic.c
+	clang -o test test.c -fsanitize=memory -L. -ltest
+	paxctl +a test
 
 	export LD_LIBRARY_PATH=.
 	atf_check -s ignore -o ignore -e match:"Uninitialized bytes in __msan_check_mem_is_initialized at offset 0 inside" ./test
@@ -125,8 +126,8 @@ EOF
 check_mem_pie_body(){
 	
 	#check whether -pie flag is supported on this architecture
-	if ! cc -pie -dM -E - < /dev/null 2>/dev/null >/dev/null; then 
-		atf_set_skip "cc -pie not supported on this architecture"
+	if ! clang -pie -dM -E - < /dev/null 2>/dev/null >/dev/null; then 
+		atf_set_skip "clang -pie not supported on this architecture"
 	fi
 	cat > test.c << EOF
 #include <sanitizer/msan_interface.h>
@@ -140,66 +141,11 @@ int main(int argc, char **argv) {
 }
 EOF
 
-	cc -fsanitize=memory -o test -fpie -pie test.c 
+	clang -fsanitize=memory -o test -fpie -pie test.c 
+	paxctl +a test
 	atf_check -s ignore -o ignore -e match:"Uninitialized bytes in __msan_check_mem_is_initialized at offset 0 inside" ./test
 }
 
-
-check_mem32_body(){
-	
-	# check what this architecture is, after all
-	if ! cc -dM -E - < /dev/null | grep -F -q _LP64; then
-		atf_skip "This is not a 64 bit architecture"
-	fi
-	if ! cc -m32 -dM -E - < /dev/null 2>/dev/null > ./def32; then
-		atf_skip "cc -m32 Not supported on this architecture"
-	else
-		if grep -F -q _LP64 ./def32; then
-		atf_fail "cc -m32 Does not generate NetBSD32 binaries"
-		fi
-	fi
-
-	cat > test.c << EOF
-#include <sanitizer/msan_interface.h>
-#include <stdlib.h>
-
-int main(int argc, char **argv) {
-  int *volatile p = (int *)malloc(sizeof(int));
-
-  __msan_check_mem_is_initialized(p, sizeof(*p));
-  return 0;
-}
-EOF
-
-	cc -fsanitize=memory -o md32 -m32 test.c
-	cc -fsanitize=memory -o md64 test.c
-	file -b ./md32 > ./ftype32
-	file -b ./md64 > ./ftype64
-	if diff ./ftype32 ./ftype64 >/dev/null; then
-		atf_fail "Generated 32bit binaries do not differ from 64bit ones"
-	fi
-	echo "32bit binaries on this platform are:"
-	cat ./ftype32
-	echo "64bit binaries are on the other hand:"
-	cat ./ftype64
-	atf_check -s ignore -o ignore -e match:"Uninitialized bytes in __msan_check_mem_is_initialized at offset 0 inside" ./md32
-
-	# Another test with profile 32bit binaries, just to make sure everything has been thoroughly done
-	cat > test.c << EOF
-#include <sanitizer/msan_interface.h>
-#include <stdlib.h>
-
-int main(int argc, char **argv) {
-  int *volatile p = (int *)malloc(sizeof(int));
-
-  __msan_check_mem_is_initialized(p, sizeof(*p));
-  return 0;
-}
-EOF
-
-	cc -fsanitize=memory -pg -m32 -o test test.c
-	atf_check -s ignore -o ignore -e match:"Uninitialized bytes in __msan_check_mem_is_initialized at offset 0 inside" ./test
-}
 
 atf_test_case target_not_supported
 target_not_supported_head()
@@ -218,5 +164,4 @@ atf_init_test_cases()
 	atf_add_test_case check_mem_profile
 	atf_add_test_case check_mem_pie
 	atf_add_test_case check_mem_pic
-	# atf_add_test_case check_mem32
 }
