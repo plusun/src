@@ -29,9 +29,10 @@
 test_target()
 {
 	SUPPORT='n'
-	if uname -m | grep -q "amd64" && command -v clang++ >/dev/null 2>&1; then
+	if uname -m | grep -q "amd64" && command -v c++ >/dev/null 2>&1 && \
+		   ! echo __clang__ | c++ -E - | grep -q __clang__; then
 		# only clang with major version newer than 7 is supported
-		CLANG_MAJOR=`echo major: __clang_major__ | clang++ -E - | grep major: | grep -o '[[:digit:]]'`
+		CLANG_MAJOR=`echo __clang_major__ | c++ -E - | grep -o '^[[:digit:]]'`
 		if [ "$CLANG_MAJOR" -ge "7" ]; then
 			SUPPORT='y'
 		fi
@@ -41,23 +42,23 @@ test_target()
 atf_test_case allocated_memory
 allocated_memory_head() {
 	atf_set "descr" "Test memory sanitizer for __msan_allocated_memory interface"
-	atf_set "require.progs" "clang++ paxctl"
+	atf_set "require.progs" "c++ paxctl"
 }
 
 atf_test_case allocated_memory_profile
 allocated_memory_profile_head() {
 	atf_set "descr" "Test memory sanitizer for __msan_allocated_memory with profiling option"
-	atf_set "require.progs" "clang++ paxctl"
+	atf_set "require.progs" "c++ paxctl"
 }
 atf_test_case allocated_memory_pic
 allocated_memory_pic_head() {
 	atf_set "descr" "Test memory sanitizer for __msan_allocated_memory with position independent code (PIC) flag"
-	atf_set "require.progs" "clang++ paxctl"
+	atf_set "require.progs" "c++ paxctl"
 }
 atf_test_case allocated_memory_pie
 allocated_memory_pie_head() {
 	atf_set "descr" "Test memory sanitizer for __msan_allocated_memory with position independent execution (PIE) flag"
-	atf_set "require.progs" "clang++ paxctl"
+	atf_set "require.progs" "c++ paxctl"
 }
 
 allocated_memory_body(){
@@ -72,7 +73,7 @@ int main() {
 }
 EOF
 
-	clang++ -fsanitize=memory -o test test.cc
+	c++ -fsanitize=memory -o test test.cc
 	paxctl +a test
 	atf_check -s ignore -o ignore -e match:"WARNING: MemorySanitizer: use-of-uninitialized-value" ./test
 }
@@ -89,7 +90,7 @@ int main() {
 }
 EOF
 
-	clang++ -fsanitize=memory -o test -pg test.cc
+	c++ -fsanitize=memory -o test -pg test.cc
 	paxctl +a test
 	atf_check -s ignore -o ignore -e match:"WARNING: MemorySanitizer: use-of-uninitialized-value" ./test
 }
@@ -113,8 +114,8 @@ int help(int argc) {
 }
 EOF
 
-	clang++ -fsanitize=memory -fPIC -shared -o libtest.so pic.cc
-	clang++ -o test test.cc -fsanitize=memory -L. -ltest
+	c++ -fsanitize=memory -fPIC -shared -o libtest.so pic.cc
+	c++ -o test test.cc -fsanitize=memory -L. -ltest
 	paxctl +a test
 
 	export LD_LIBRARY_PATH=.
@@ -123,8 +124,8 @@ EOF
 allocated_memory_pie_body(){
 	
 	#check whether -pie flag is supported on this architecture
-	if ! clang++ -pie -dM -E - < /dev/null 2>/dev/null >/dev/null; then 
-		atf_set_skip "clang++ -pie not supported on this architecture"
+	if ! c++ -pie -dM -E - < /dev/null 2>/dev/null >/dev/null; then 
+		atf_set_skip "c++ -pie not supported on this architecture"
 	fi
 	cat > test.cc << EOF
 #include <stdio.h>
@@ -137,7 +138,7 @@ int main() {
 }
 EOF
 
-	clang++ -fsanitize=memory -o test -fpie -pie test.cc
+	c++ -fsanitize=memory -o test -fpie -pie test.cc
 	paxctl +a test
 	atf_check -s ignore -o ignore -e match:"WARNING: MemorySanitizer: use-of-uninitialized-value" ./test
 }

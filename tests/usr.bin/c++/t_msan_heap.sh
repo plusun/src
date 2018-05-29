@@ -29,9 +29,10 @@
 test_target()
 {
 	SUPPORT='n'
-	if uname -m | grep -q "amd64" && command -v clang++ >/dev/null 2>&1; then
+	if uname -m | grep -q "amd64" && command -v c++ >/dev/null 2>&1 && \
+		   ! echo __clang__ | c++ -E - | grep -q __clang__; then
 		# only clang with major version newer than 7 is supported
-		CLANG_MAJOR=`echo major: __clang_major__ | clang++ -E - | grep major: | grep -o '[[:digit:]]'`
+		CLANG_MAJOR=`echo __clang_major__ | c++ -E - | grep -o '^[[:digit:]]'`
 		if [ "$CLANG_MAJOR" -ge "7" ]; then
 			SUPPORT='y'
 		fi
@@ -41,23 +42,23 @@ test_target()
 atf_test_case heap
 heap_head() {
 	atf_set "descr" "Test memory sanitizer for uninitialized heap value case"
-	atf_set "require.progs" "clang++ paxctl"
+	atf_set "require.progs" "c++ paxctl"
 }
 
 atf_test_case heap_profile
 heap_profile_head() {
 	atf_set "descr" "Test memory sanitizer for uninitialized heap value with profiling option"
-	atf_set "require.progs" "clang++ paxctl"
+	atf_set "require.progs" "c++ paxctl"
 }
 atf_test_case heap_pic
 heap_pic_head() {
 	atf_set "descr" "Test memory sanitizer for uninitialized heap value with position independent code (PIC) flag"
-	atf_set "require.progs" "clang++ paxctl"
+	atf_set "require.progs" "c++ paxctl"
 }
 atf_test_case heap_pie
 heap_pie_head() {
 	atf_set "descr" "Test memory sanitizer for uninitialized heap value with position independent execution (PIE) flag"
-	atf_set "require.progs" "clang++ paxctl"
+	atf_set "require.progs" "c++ paxctl"
 }
 
 heap_body(){
@@ -66,7 +67,7 @@ heap_body(){
 int main() { int *a = (int *)malloc(sizeof(int)); return *a; }
 EOF
 
-	clang++ -fsanitize=memory -o test test.cc
+	c++ -fsanitize=memory -o test test.cc
 	paxctl +a test
 	atf_check -s ignore -o ignore -e match:"WARNING: MemorySanitizer: use-of-uninitialized-value" ./test
 }
@@ -77,7 +78,7 @@ heap_profile_body(){
 int main() { int *a = (int *)malloc(sizeof(int)); return *a; }
 EOF
 
-	clang++ -fsanitize=memory -o test -pg test.cc
+	c++ -fsanitize=memory -o test -pg test.cc
 	paxctl +a test
 	atf_check -s ignore -o ignore -e match:"WARNING: MemorySanitizer: use-of-uninitialized-value" ./test
 }
@@ -95,8 +96,8 @@ EOF
 int help(int argc) { int *a = (int *)malloc(sizeof(int)); return *a; }
 EOF
 
-	clang++ -fsanitize=memory -fPIC -shared -o libtest.so pic.cc
-	clang++ -o test test.cc -fsanitize=memory -L. -ltest
+	c++ -fsanitize=memory -fPIC -shared -o libtest.so pic.cc
+	c++ -o test test.cc -fsanitize=memory -L. -ltest
 	paxctl +a test
 
 	export LD_LIBRARY_PATH=.
@@ -105,15 +106,15 @@ EOF
 heap_pie_body(){
 	
 	#check whether -pie flag is supported on this architecture
-	if ! clang++ -pie -dM -E - < /dev/null 2>/dev/null >/dev/null; then 
-		atf_set_skip "clang++ -pie not supported on this architecture"
+	if ! c++ -pie -dM -E - < /dev/null 2>/dev/null >/dev/null; then 
+		atf_set_skip "c++ -pie not supported on this architecture"
 	fi
 	cat > test.cc << EOF
 #include <stdlib.h>
 int main() { int *a = (int *)malloc(sizeof(int)); return *a; }
 EOF
 
-	clang++ -fsanitize=memory -o test -fpie -pie test.cc
+	c++ -fsanitize=memory -o test -fpie -pie test.cc
 	paxctl +a test
 	atf_check -s ignore -o ignore -e match:"WARNING: MemorySanitizer: use-of-uninitialized-value" ./test
 }

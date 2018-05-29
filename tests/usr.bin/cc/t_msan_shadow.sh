@@ -28,36 +28,37 @@
 
 test_target()
 {
-        SUPPORT='n'
-        if uname -m | grep -q "amd64" && command -v clang >/dev/null 2>&1; then
-                # only clang with major version newer than 7 is supported
-                CLANG_MAJOR=`echo major: __clang_major__ | clang -E - | grep major: | grep -o '[[:digit:]]'`
-                if [ "$CLANG_MAJOR" -ge "7" ]; then
-                        SUPPORT='y'
-                fi
-        fi
+	SUPPORT='n'
+	if uname -m | grep -q "amd64" && command -v cc >/dev/null 2>&1 && \
+		   ! echo __clang__ | cc -E - | grep -q __clang__; then
+		# only clang with major version newer than 7 is supported
+		CLANG_MAJOR=`echo __clang_major__ | cc -E - | grep -o '^[[:digit:]]'`
+		if [ "$CLANG_MAJOR" -ge "7" ]; then
+			SUPPORT='y'
+		fi
+	fi
 }
 
 atf_test_case shadow
 shadow_head() {
 	atf_set "descr" "Test memory sanitizer for shadow interface"
-	atf_set "require.progs" "clang paxctl"
+	atf_set "require.progs" "cc paxctl"
 }
 
 atf_test_case shadow_profile
 shadow_profile_head() {
 	atf_set "descr" "Test memory sanitizer for shadow with profiling option"
-	atf_set "require.progs" "clang paxctl"
+	atf_set "require.progs" "cc paxctl"
 }
 atf_test_case shadow_pic
 shadow_pic_head() {
 	atf_set "descr" "Test memory sanitizer for shadow with position independent code (PIC) flag"
-	atf_set "require.progs" "clang paxctl"
+	atf_set "require.progs" "cc paxctl"
 }
 atf_test_case shadow_pie
 shadow_pie_head() {
 	atf_set "descr" "Test memory sanitizer for shadow with position independent execution (PIE) flag"
-	atf_set "require.progs" "clang paxctl"
+	atf_set "require.progs" "cc paxctl"
 }
 
 shadow_body(){
@@ -77,7 +78,7 @@ int main(int argc, char **argv) {
 }
 EOF
 
-	clang -fsanitize=memory -o test test.c
+	cc -fsanitize=memory -o test test.c
 	paxctl +a test
 	atf_check -s ignore -o match:"2" -e match:"00000000 ff000000" ./test
 }
@@ -99,7 +100,7 @@ int main(int argc, char **argv) {
 }
 EOF
 
-	clang -fsanitize=memory -o test -pg test.c
+	cc -fsanitize=memory -o test -pg test.c
 	paxctl +a test
 	atf_check -s ignore -o match:"2" -e match:"00000000 ff000000" ./test
 }
@@ -128,8 +129,8 @@ int help(int argc) {
 }
 EOF
 
-	clang -fsanitize=memory -fPIC -shared -o libtest.so pic.c
-	clang -o test test.c -fsanitize=memory -L. -ltest
+	cc -fsanitize=memory -fPIC -shared -o libtest.so pic.c
+	cc -o test test.c -fsanitize=memory -L. -ltest
 	paxctl +a test
 
 	export LD_LIBRARY_PATH=.
@@ -138,8 +139,8 @@ EOF
 shadow_pie_body(){
 	
 	#check whether -pie flag is supported on this architecture
-	if ! clang -pie -dM -E - < /dev/null 2>/dev/null >/dev/null; then 
-		atf_set_skip "clang -pie not supported on this architecture"
+	if ! cc -pie -dM -E - < /dev/null 2>/dev/null >/dev/null; then 
+		atf_set_skip "cc -pie not supported on this architecture"
 	fi
 	cat > test.c << EOF
 #include <stdio.h>
@@ -157,7 +158,7 @@ int main(int argc, char **argv) {
 }
 EOF
 
-	clang -fsanitize=memory -o test -fpie -pie test.c 
+	cc -fsanitize=memory -o test -fpie -pie test.c 
 	paxctl +a test
 	atf_check -s ignore -o match:"2" -e match:"00000000 ff000000" ./test
 }
