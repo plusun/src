@@ -27,10 +27,18 @@ TESTS_SH+=	t_msan_stack
 TESTS_SH+=	t_msan_unpoison
 TESTS_SH+=	t_pthread_once
 TESTS_SH+=	t_static_destructor
+TESTS_SH+=	t_tsan_data_race
+TESTS_SH+=	t_tsan_heap_use_after_free
+TESTS_SH+=	t_tsan_lock_order_inversion
+TESTS_SH+=	t_tsan_locked_mutex_destroy
+TESTS_SH+=	t_tsan_signal_errno
+TESTS_SH+=	t_tsan_thread_leak
+TESTS_SH+=	t_tsan_vptr_race
 TESTS_SH+=	t_ubsan_int_add_overflow
 TESTS_SH+=	t_ubsan_int_sub_overflow
 TESTS_SH+=	t_ubsan_int_neg_overflow
 TESTS_SH+=	t_ubsan_int_divzero
 TESTS_SH+=	t_ubsan_vla_out_of_bounds
+
 
 .include <bsd.test.mk>
