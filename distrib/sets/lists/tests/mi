@@ -3664,7 +3664,7 @@
 ./usr/tests/usr.bin/c++/t_msan_unpoison		tests-usr.bin-tests	compattestfile,atf,cxx
 ./usr/tests/usr.bin/c++/t_tsan_data_race	tests-usr.bin-tests	compattestfile,atf,cxx
 ./usr/tests/usr.bin/c++/t_tsan_heap_use_after_free	tests-usr.bin-tests	compattestfile,atf,cxx
-./usr/tests/usr.bin/c++/t_tsann_lock_order_inversion	tests-usr.bin-tests	compattestfile,atf,cxx
+./usr/tests/usr.bin/c++/t_tsan_lock_order_inversion	tests-usr.bin-tests	compattestfile,atf,cxx
 ./usr/tests/usr.bin/c++/t_tsan_locked_mutex_destroy	tests-usr.bin-tests	compattestfile,atf,cxx
 ./usr/tests/usr.bin/c++/t_tsan_signal_errno	tests-usr.bin-tests	compattestfile,atf,cxx
 ./usr/tests/usr.bin/c++/t_tsan_thread_leak	tests-usr.bin-tests	compattestfile,atf,cxx
@@ -3696,7 +3696,7 @@
 ./usr/tests/usr.bin/cc/t_msan_unpoison		tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cc/t_tsan_data_race		tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cc/t_tsan_heap_use_after_free	tests-usr.bin-tests	compattestfile,atf
-./usr/tests/usr.bin/cc/t_tsann_lock_order_inversion	tests-usr.bin-tests	compattestfile,atf
+./usr/tests/usr.bin/cc/t_tsan_lock_order_inversion	tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cc/t_tsan_locked_mutex_destroy	tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cc/t_tsan_signal_errno	tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cc/t_tsan_thread_leak	tests-usr.bin-tests	compattestfile,atf
