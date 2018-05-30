@@ -3669,6 +3669,9 @@
 ./usr/tests/usr.bin/c++/t_tsan_signal_errno	tests-usr.bin-tests	compattestfile,atf,cxx
 ./usr/tests/usr.bin/c++/t_tsan_thread_leak	tests-usr.bin-tests	compattestfile,atf,cxx
 ./usr/tests/usr.bin/c++/t_tsan_vptr_race	tests-usr.bin-tests	compattestfile,atf,cxx
+./usr/tests/usr.bin/c++/t_fuzzer_oom		tests-usr.bin-tests	compattestfile,atf,cxx
+./usr/tests/usr.bin/c++/t_fuzzer_simple		tests-usr.bin-tests	compattestfile,atf,cxx
+./usr/tests/usr.bin/c++/t_fuzzer_timeout	tests-usr.bin-tests	compattestfile,atf,cxx
 ./usr/tests/usr.bin/cc				tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cc/Atffile			tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cc/Kyuafile			tests-usr.bin-tests	compattestfile,atf,kyua
@@ -3700,6 +3703,9 @@
 ./usr/tests/usr.bin/cc/t_tsan_locked_mutex_destroy	tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cc/t_tsan_signal_errno	tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cc/t_tsan_thread_leak	tests-usr.bin-tests	compattestfile,atf
+./usr/tests/usr.bin/cc/t_fuzzer_oom		tests-usr.bin-tests	compattestfile,atf
+./usr/tests/usr.bin/cc/t_fuzzer_simple		tests-usr.bin-tests	compattestfile,atf
+./usr/tests/usr.bin/cc/t_fuzzer_timeout		tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cmp				tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cmp/Atffile			tests-usr.bin-tests	compattestfile,atf
 ./usr/tests/usr.bin/cmp/Kyuafile		tests-usr.bin-tests	compattestfile,atf,kyua
