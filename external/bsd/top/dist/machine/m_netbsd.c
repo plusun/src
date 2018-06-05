@@ -335,7 +335,7 @@ machine_init(statics)
 		ncpu = 1;
 
 	cpu_states = malloc(sizeof(cpu_states[0]) * CPUSTATES * ncpu);
-	cp_old = malloc(sizeof(cp_old[0]) * CPUSTATES * ncpu);
+	cp_old = calloc(CPUSTATES * ncpu, sizeof(cp_old[0]));
 	cp_diff = malloc(sizeof(cp_diff[0]) * CPUSTATES * ncpu);
 	if (cpu_states == NULL || cp_time == NULL || cp_old == NULL ||
 	    cp_diff == NULL) {
