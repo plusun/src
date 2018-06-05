@@ -47,6 +47,7 @@ __RCSID("$NetBSD: find.c,v 1.30 2016/06/13 00:04:40 pgoyette Exp $");
 #include <err.h>
 #include <errno.h>
 #include <fts.h>
+#include <sanitizer.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -149,6 +150,12 @@ find_formplan(char **argv)
 static int
 ftscompare(const FTSENT **e1, const FTSENT **e2)
 {
+
+	MSAN_UNPOISON(e1, sizeof(FTSENT *));
+	MSAN_UNPOISON(e2, sizeof(FTSENT *));
+
+	MSAN_UNPOISON(*e1, sizeof(FTSENT));
+	MSAN_UNPOISON(*e2, sizeof(FTSENT));
 
 	return (strcoll((*e1)->fts_name, (*e2)->fts_name));
 }
