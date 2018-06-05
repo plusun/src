@@ -2821,6 +2821,7 @@
 ./usr/include/rump/scsitest.h			comp-obsolete obsolete
 ./usr/include/rump/ukfs.h			comp-c-include	rump
 ./usr/include/sa.h				comp-obsolete		obsolete
+./usr/include/sanitizer.h			comp-c-include
 ./usr/include/saslc.h				comp-c-include
 ./usr/include/sched.h				comp-c-include
 ./usr/include/sdp.h				comp-c-include

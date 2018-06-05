@@ -17,7 +17,8 @@ INCS=	a.out.h aio.h ar.h assert.h atomic.h \
 	memory.h mntopts.h monetary.h mpool.h mqueue.h \
 	ndbm.h netconfig.h netdb.h netgroup.h nlist.h nl_types.h nsswitch.h \
 	paths.h pwd.h quota.h randomid.h ranlib.h re_comp.h regex.h regexp.h \
-	resolv.h res_update.h rmt.h sched.h search.h semaphore.h setjmp.h \
+	resolv.h res_update.h rmt.h \
+	sanitizer.h sched.h search.h semaphore.h setjmp.h \
 	string.h sgtty.h signal.h spawn.h stab.h stdalign.h stddef.h stdio.h \
 	stdlib.h stdnoreturn.h strings.h stringlist.h struct.h sysexits.h \
 	tar.h time.h ttyent.h tzfile.h \
