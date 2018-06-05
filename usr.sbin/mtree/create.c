@@ -53,7 +53,7 @@ __RCSID("$NetBSD: create.c,v 1.75 2017/12/31 03:04:44 christos Exp $");
 #include <fcntl.h>
 #include <grp.h>
 #include <pwd.h>
-#include <sanitizer.h>
+//#include <sanitizer.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -456,11 +456,11 @@ static int
 dcmp(const FTSENT *FTS_CONST *a, const FTSENT *FTS_CONST *b)
 {
 
-	MSAN_UNPOISON(a, sizeof(FTSENT *));
-	MSAN_UNPOISON(b, sizeof(FTSENT *));
+//	MSAN_UNPOISON(a, sizeof(FTSENT *));
+//	MSAN_UNPOISON(b, sizeof(FTSENT *));
 
-	MSAN_UNPOISON(*a, sizeof(FTSENT));
-	MSAN_UNPOISON(*b, sizeof(FTSENT));
+//	MSAN_UNPOISON(*a, sizeof(FTSENT));
+//	MSAN_UNPOISON(*b, sizeof(FTSENT));
 
 	if (S_ISDIR((*a)->fts_statp->st_mode)) {
 		if (!S_ISDIR((*b)->fts_statp->st_mode))
