@@ -56,6 +56,7 @@ __RCSID("$NetBSD: ls.c,v 1.76 2017/02/06 21:06:04 rin Exp $");
 #include <errno.h>
 #include <fts.h>
 #include <locale.h>
+#include <sanitizer.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -687,6 +688,12 @@ static int
 mastercmp(const FTSENT **a, const FTSENT **b)
 {
 	int a_info, b_info;
+
+	MSAN_UNPOISON(a, sizeof(FTSENT *));
+	MSAN_UNPOISON(b, sizeof(FTSENT *));
+
+	MSAN_UNPOISON(*a, sizeof(FTSENT));
+	MSAN_UNPOISON(*b, sizeof(FTSENT));
 
 	a_info = (*a)->fts_info;
 	if (a_info == FTS_ERR)
