@@ -54,7 +54,7 @@ __RCSID("$NetBSD: expr.y,v 1.39 2016/09/05 01:00:07 sevan Exp $");
 static const char * const *av;
 
 #if !ENABLE_FUZZER
-static void yyerror(const char *, ...); __dead;
+static void yyerror(const char *, ...) __dead;
 #else
 #define yyerror(...) return 2;
 #endif
