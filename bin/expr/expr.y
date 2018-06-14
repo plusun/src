@@ -46,14 +46,14 @@ __RCSID("$NetBSD: expr.y,v 1.39 2016/09/05 01:00:07 sevan Exp $");
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if ENABLE_FUZZER
+#ifdef ENABLE_FUZZER
 #include <stdint.h>
 #include <stddef.h>
 #endif
 
 static const char * const *av;
 
-#if !ENABLE_FUZZER
+#ifndef ENABLE_FUZZER
 static void yyerror(const char *, ...) __dead;
 #else
 #define yyerror(...) return 2;
@@ -436,7 +436,7 @@ yylex(void)
 /*
  * Print error message and exit with error 2 (syntax error).
  */
-#if !ENABLE_FUZZER
+#ifndef ENABLE_FUZZER
 static __printflike(1, 2) void
 yyerror(const char *fmt, ...)
 {
@@ -448,7 +448,7 @@ yyerror(const char *fmt, ...)
 }
 #endif
 
-#if ENABLE_FUZZER
+#ifdef ENABLE_FUZZER
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   char *str = (char *)malloc(Size + 1);
