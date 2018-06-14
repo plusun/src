@@ -873,5 +873,6 @@ LINKSMODE?= ${LIBMODE}
 .include <bsd.dep.mk>
 .include <bsd.clang-analyze.mk>
 .include <bsd.clean.mk>
+.include <bsd.fuzzer.mk>
 
 ${TARGETS}:	# ensure existence
