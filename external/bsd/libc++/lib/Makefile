@@ -44,6 +44,6 @@ CWARNFLAGS.clang+=	-Wno-error=missing-prototypes -Wno-error=sometimes-uninitiali
 CWARNFLAGS.clang+=	-Wno-error=missing-field-initializers -Wno-error=switch
 CWARNFLAGS.clang+=	-Wno-error=implicit-exception-spec-mismatch
 
-LDFLAGS+=	-Wl,-z,defs
+# LDFLAGS+=	-Wl,-z,defs
 
 .include <bsd.lib.mk>
