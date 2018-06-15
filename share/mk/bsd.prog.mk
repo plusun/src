@@ -696,7 +696,7 @@ LINKSMODE?= ${BINMODE}
 .include <bsd.dep.mk>
 .include <bsd.clang-analyze.mk>
 .include <bsd.clean.mk>
-.include <bsd.fuzzer.prog.mk>
+# .include <bsd.fuzzer.prog.mk>
 
 ${TARGETS}:	# ensure existence
 

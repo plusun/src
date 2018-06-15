@@ -45,5 +45,5 @@ CWARNFLAGS.clang+=	-Wno-error=missing-field-initializers -Wno-error=switch
 CWARNFLAGS.clang+=	-Wno-error=implicit-exception-spec-mismatch
 
 # LDFLAGS+=	-Wl,-z,defs
-
+_BSD_FUZZER_MK=1
 .include <bsd.lib.mk>

@@ -470,18 +470,18 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   free(pre);
 
   // generate argv
-  const char **argv = malloc(sizeof(const char *) * count + 1);
+  const char **argv = malloc(sizeof(const char *) * (count + 1));
   word = strtok(str, delim);
   count = 0;
   while (word) {
     argv[count++] = word;
     word = strtok(NULL, delim);
   }
-  free(str);
   argv[count] = NULL;
 
   av = argv;
   yyparse();
+  free(str);
   free(argv);
   return 0;
 }
