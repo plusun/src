@@ -46,10 +46,18 @@ __RCSID("$NetBSD: expr.y,v 1.41 2018/06/13 17:35:15 kamil Exp $");
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef ENABLE_FUZZER
+#include <stdint.h>
+#include <stddef.h>
+#endif
 
 static const char * const *av;
 
+#ifndef ENABLE_FUZZER
 static void yyerror(const char *, ...) __dead;
+#else
+#define yyerror(...) return 2;
+#endif
 static int yylex(void);
 static int is_zero_or_null(const char *);
 static int is_integer(const char *);
@@ -429,6 +437,7 @@ yylex(void)
 /*
  * Print error message and exit with error 2 (syntax error).
  */
+#ifndef ENABLE_FUZZER
 static __printflike(1, 2) void
 yyerror(const char *fmt, ...)
 {
@@ -438,6 +447,46 @@ yyerror(const char *fmt, ...)
 	verrx(2, fmt, arg);
 	va_end(arg);
 }
+#endif
+
+#ifdef ENABLE_FUZZER
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+  char *str = (char *)malloc(Size + 1);
+  char *pre = (char *)malloc(Size + 1);
+  memcpy(str, Data, Size);
+  str[Size] = '\0';
+  memcpy(pre, Data, Size);
+  pre[Size] = '\0';
+
+  // scan Data to get count of words
+  const char *delim = " \t\n";
+  char *word = strtok(pre, delim);
+  size_t count = 0;
+  while (word) {
+    count++;
+    word = strtok(NULL, delim);
+  }
+  free(pre);
+
+  // generate argv
+  const char **argv = malloc(sizeof(const char *) * (count + 1));
+  word = strtok(str, delim);
+  count = 0;
+  while (word) {
+    argv[count++] = word;
+    word = strtok(NULL, delim);
+  }
+  free(str);
+  argv[count] = NULL;
+
+  av = argv;
+  yyparse();
+//  free(str);
+  free(argv);
+  return 0;
+}
+#else
 
 int
 main(int argc, const char * const *argv)
@@ -456,3 +505,4 @@ main(int argc, const char * const *argv)
 	exit(yyparse());
 	/* NOTREACHED */
 }
+#endif
