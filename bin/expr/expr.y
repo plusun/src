@@ -477,12 +477,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     argv[count++] = word;
     word = strtok(NULL, delim);
   }
-  free(str);
+//  free(str);
   argv[count] = NULL;
 
   av = argv;
   yyparse();
-//  free(str);
+  free(str);
   free(argv);
   return 0;
 }
