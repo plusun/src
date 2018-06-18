@@ -72,6 +72,10 @@ static const char sccsid[] = "@(#)main.c	8.2 (Berkeley) 1/3/94";
 #include <string.h>
 #include <unistd.h>
 
+#ifdef ENABLE_FUZZER
+#include <stdint.h>
+#endif
+
 #include "defs.h"
 #include "extern.h"
 
@@ -97,6 +101,14 @@ struct s_flist {
 	char *fname;
 	struct s_flist *next;
 };
+
+#ifdef ENABLE_FUZZER
+struct s_fuzzer_buffer {
+        char *buffer;
+        size_t len;
+        size_t off;
+} finput;
+#endif
 
 /*
  * Linked list pointer to files and pointer to current
@@ -129,6 +141,7 @@ static void add_compunit(enum e_cut, char *);
 static void add_file(char *);
 static void usage(void) __dead;
 
+#ifndef ENABLE_FUZZER
 int
 main(int argc, char *argv[])
 {
@@ -218,6 +231,47 @@ main(int argc, char *argv[])
 		err(1, "stdout");
 	exit(rval);
 }
+#else
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
+
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+        if (Size == 0)
+                return 0;
+        char *buffer;
+        if (Data[Size - 1] != '\0')
+                Size++;
+
+        buffer = (char *)malloc(Size);
+        memcpy(buffer, Data, Size - 1);
+        buffer[Size - 1] = '\0';
+
+        size_t i;
+        for (i = 0; i < Size; i++)
+                if (buffer[i] == '\0') {
+                        finput.buffer = buffer;
+                        finput.off = 0;
+                        finput.len = i;
+                }
+
+        size_t count = 0;
+        while ((++i) < Size) {
+                size_t last = i;
+                for (; i < Size; i++)
+                        if (buffer[i] == '\0') {
+                                add_compunit(CU_STRING, buffer + last);
+                                count++;
+                        }
+        }
+
+        if (count == 0) {
+                return 0;
+        }
+        compile();
+        process();
+
+        return 0;
+}
+#endif
 
 static void
 usage(void)
@@ -329,6 +383,7 @@ again:
  * Like fgets, but go through the list of files chaining them together.
  * Set len to the length of the line.
  */
+#ifndef ENABLE_FUZZER
 int
 mf_fgets(SPACE *sp, enum e_spflag spflag)
 {
@@ -471,6 +526,30 @@ mf_fgets(SPACE *sp, enum e_spflag spflag)
 
 	return (1);
 }
+#else
+int
+mf_fgets(SPACE *sp, enum e_spflag spflag) {
+        size_t end;
+        if (finput.off >= finput.len)
+                return 0;
+        for (end = finput.off;
+             end != finput.len && finput.buffer[end] != '\n';
+             end++) ;
+
+        char *p = finput.buffer + finput.off;
+        size_t plen;
+        if (end >= finput.len) {
+                plen = finput.len - finput.off;
+                finput.off = finput.len;
+        } else {
+                plen = end - finput.off - 1;
+                finput.off = end + 1;
+        }
+        cspace(sp, p, plen, spflag);
+        linenum++;
+        return 1;
+}
+#endif
 
 /*
  * Add a compilation unit to the linked list
