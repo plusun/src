@@ -59,3 +59,11 @@ char	*strregerror(int, regex_t *);
 void	*xmalloc(size_t);
 void	*xrealloc(void *, size_t);
 void	*xcalloc(size_t, size_t);
+
+#ifdef ENABLE_FUZZER
+#include <setjmp.h>
+#include <stdio.h>
+extern jmp_buf fuzzer_exit;
+#define errx(I, ...) do { fprintf(stderr, ##__VA_ARGS__); longjmp(fuzzer_exit, 1); } while(0)
+#define exit(...) longjmp(fuzzer_exit, 1)
+#endif

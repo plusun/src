@@ -232,43 +232,52 @@ main(int argc, char *argv[])
 	exit(rval);
 }
 #else
+jmp_buf fuzzer_exit;
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
         if (Size == 0)
                 return 0;
-        char *buffer;
-        if (Data[Size - 1] != '\0')
-                Size++;
+        char *buffer = (char *)malloc(Size);
+        memcpy(buffer, Data, Size);
 
-        buffer = (char *)malloc(Size);
-        memcpy(buffer, Data, Size - 1);
-        buffer[Size - 1] = '\0';
-
-        size_t i;
-        for (i = 0; i < Size; i++)
-                if (buffer[i] == '\0') {
-                        finput.buffer = buffer;
-                        finput.off = 0;
-                        finput.len = i;
-                }
-
+        size_t i, last = 0;
         size_t count = 0;
-        while ((++i) < Size) {
-                size_t last = i;
-                for (; i < Size; i++)
-                        if (buffer[i] == '\0') {
-                                add_compunit(CU_STRING, buffer + last);
-                                count++;
-                        }
+        const char delim = '\n';
+        for (i = 0; i < Size; i++) {
+                if (buffer[i] == delim) {
+                        buffer[i] = '\0';
+                        if (i == last)
+                                break;
+                        add_compunit(CU_STRING, buffer + last);
+                        last = i + 1;
+                        count++;
+                }
         }
 
         if (count == 0) {
                 return 0;
         }
-        compile();
-        process();
 
+        last++;
+        if (last < Size) {
+                finput.buffer = buffer + last;
+                finput.off = 0;
+                finput.len = Size - last;
+        } else
+                return 0;
+
+        outfile = stdout;
+        outfname = "stdout";
+        if (setjmp(fuzzer_exit)) {
+                goto end;
+        } else {
+                compile();
+                process();
+        }
+
+end:
+        free(buffer);
         return 0;
 }
 #endif
@@ -542,7 +551,7 @@ mf_fgets(SPACE *sp, enum e_spflag spflag) {
                 plen = finput.len - finput.off;
                 finput.off = finput.len;
         } else {
-                plen = end - finput.off - 1;
+                plen = end - finput.off;
                 finput.off = end + 1;
         }
         cspace(sp, p, plen, spflag);
