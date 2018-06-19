@@ -91,6 +91,7 @@ extern int etext();
 
 STATIC void read_profile(const char *);
 
+#ifndef ENABLE_FUZZER
 /*
  * Main routine.  We initialize things, parse the arguments, execute
  * profiles if we're a login shell, and then call cmdloop to execute
@@ -246,7 +247,17 @@ state4:	/* XXX ??? - why isn't this before the "if" statement */
 	exitshell(exitstatus);
 	/* NOTREACHED */
 }
+#else
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
 
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+        if (Size == 0 || Data[Size - 1] != '\0') {
+                return 0;
+        }
+        evalstring((const char *)Data, 0);
+        return 0;
+}
+#endif
 
 /*
  * Read and execute commands.  "Top" is nonzero for the top level command
