@@ -236,9 +236,10 @@ jmp_buf fuzzer_exit;
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-        if (Size == 0)
+        static const size_t N = 1024;
+        if (Size == 0 || Size > N)
                 return 0;
-        char *buffer = (char *)malloc(Size);
+        char buffer[N];
         memcpy(buffer, Data, Size);
 
         size_t i, last = 0;
@@ -264,20 +265,19 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
                 finput.buffer = buffer + last;
                 finput.off = 0;
                 finput.len = Size - last;
-        } else
+        } else {
                 return 0;
+        }
 
         outfile = stdout;
         outfname = "stdout";
         if (setjmp(fuzzer_exit)) {
-                goto end;
+                return 0;
         } else {
                 compile();
                 process();
         }
 
-end:
-        free(buffer);
         return 0;
 }
 #endif
