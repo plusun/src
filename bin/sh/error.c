@@ -83,9 +83,17 @@ void
 exraise(int e)
 {
 	if (handler == NULL)
+#ifndef ENABLE_FUZZER
 		abort();
+#else
+                fexit();
+#endif
 	exception = e;
+#ifdef ENABLE_FUZZER
+        fexit();
+#else
 	longjmp(handler->loc, 1);
+#endif
 }
 
 

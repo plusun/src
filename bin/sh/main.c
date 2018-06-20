@@ -249,12 +249,24 @@ state4:	/* XXX ??? - why isn't this before the "if" statement */
 }
 #else
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
-
+jmp_buf fuzzer_exit;
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-        if (Size == 0 || Data[Size - 1] != '\0') {
+	static const size_t N = 1024;
+        struct stackmark smark;
+        if (Size == 0 || Size >= N) {
                 return 0;
         }
-        evalstring((const char *)Data, 0);
+	rootshell = 1;
+	init();
+	initpwd();
+	setstackmark(&smark);
+
+        line_number = 1;
+	char buffer[N];
+	memcpy(buffer, Data, Size);
+	buffer[Size] = '\0';
+        if (!setjmp(fuzzer_exit))
+                evalstring(buffer, 0);
         return 0;
 }
 #endif

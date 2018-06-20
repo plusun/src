@@ -117,3 +117,8 @@ void sh_exit(int) __dead;
 #define setjmp(jmploc)	_setjmp(jmploc)
 #define longjmp(jmploc, val)	_longjmp(jmploc, val)
 #endif
+
+#ifdef ENABLE_FUZZER
+extern jmp_buf fuzzer_exit;
+#define fexit() longjmp(fuzzer_exit, 1)
+#endif
