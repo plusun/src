@@ -348,7 +348,11 @@ setsignal(int signo, int vforked)
 		switch (signo) {
 		case SIGINT:
 			if (iflag || minusc || sflag == 0)
+#ifndef ENABLE_FUZZER
 				action = S_CATCH;
+#else
+                                action = S_DFL;
+#endif
 			break;
 		case SIGQUIT:
 #ifdef DEBUG

@@ -399,7 +399,11 @@ openhere(const union node *redir)
 	}
 	if (forkshell(NULL, NULL, FORK_NOJOB) == 0) {
 		close(pip[0]);
+#ifndef ENABLE_FUZZER
 		signal(SIGINT, SIG_IGN);
+#else
+		signal(SIGINT, SIG_DFL);
+#endif
 		signal(SIGQUIT, SIG_IGN);
 		signal(SIGHUP, SIG_IGN);
 #ifdef SIGTSTP

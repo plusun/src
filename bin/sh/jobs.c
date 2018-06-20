@@ -1189,7 +1189,9 @@ forkchild(struct job *jp, union node *n, int mode, int vforked)
 		setsignal(SIGTSTP, vforked);
 		setsignal(SIGTTOU, vforked);
 	} else if (mode == FORK_BG) {
+#ifndef ENABLE_FUZZER
 		ignoresig(SIGINT, vforked);
+#endif
 		ignoresig(SIGQUIT, vforked);
 		if ((jp == NULL || jp->nprocs == 0) &&
 		    ! fd0_redirected_p ()) {
@@ -1200,7 +1202,9 @@ forkchild(struct job *jp, union node *n, int mode, int vforked)
 	}
 #else
 	if (mode == FORK_BG) {
+#ifndef ENABLE_FUZZER
 		ignoresig(SIGINT, vforked);
+#endif
 		ignoresig(SIGQUIT, vforked);
 		if ((jp == NULL || jp->nprocs == 0) &&
 		    ! fd0_redirected_p ()) {
