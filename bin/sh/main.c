@@ -260,6 +260,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
 	init();
 	initpwd();
 	setstackmark(&smark);
+        const char *name = "/bin/sh";
+        char *argv[] = { name, NULL };
+        int argc = sizeof(argv) / sizeof(char *) - 1;
+        procargs(argc, argv);
 
         line_number = 1;
 	char buffer[N];
