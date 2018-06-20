@@ -235,8 +235,10 @@ INIT {
 	 * START_TIME belongs only to this shell.
 	 * LINENO is simply magic...
 	 */
+#ifndef ENABLE_FUZZER
 	snprintf(buf, sizeof(buf), "%d", (int)getppid());
 	setvar("PPID", buf, VREADONLY);
+#endif
 	setvar("IFS", ifs_default, VTEXTFIXED);
 	setvar("PSc", (geteuid() == 0 ? "#" : "$"), VTEXTFIXED);
 
@@ -245,6 +247,7 @@ INIT {
 	setvar("START_TIME", buf, VTEXTFIXED);
 #endif
 
+#ifndef ENABLE_FUZZER
 	setvar("NETBSD_SHELL", NETBSD_SHELL
 #ifdef BUILD_DATE
 		" BUILD:" BUILD_DATE
@@ -277,7 +280,7 @@ INIT {
 		" BOGUS_NOT"
 #endif
 		    , VTEXTFIXED|VREADONLY|VNOEXPORT);
-
+#endif
 	setvar("LINENO", "1", VTEXTFIXED);
 }
 #endif
