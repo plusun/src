@@ -257,6 +257,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
                 return 0;
         }
 	rootshell = 1;
+        rootpid = getpid();
 	init();
 	initpwd();
 	setstackmark(&smark);
