@@ -57,11 +57,21 @@ int fuzzer_socket(int domain, int type, int protocol) {
 	return s + 1;
 }
 
-int fuzzer_setsockopt(int s, int level, int optname,
-			const void *optval, socklen_t optlen) { return 0; }
-int fuzzer_shutdown(int s, int how) {
+static inline int fuzzer_sock_to_index(int s) {
 	s--;
 	if (s < 0 || s >= fstate.n)
+		return -1;
+	return s;
+}
+
+int fuzzer_setsockopt(int s, int level, int optname,
+			const void *optval, socklen_t optlen) {
+	if ((s = fuzzer_sock_to_index(s)) < 0)
+		return -1;
+	return 0;
+}
+int fuzzer_shutdown(int s, int how) {
+	if ((s = fuzzer_sock_to_index(s)) < 0)
 		return -1;
 	if (how == SHUT_RD || how == SHUT_RDWR)
 		fstate.fuffers[s].read = 0;
@@ -80,8 +90,8 @@ int fuzzer_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
 			continue;
 		}
 		short e = fds[i].events;
-		int index = fds[i].fd - 1;
-		if (index < 0 || index >= fstate.n ||
+		int index = fuzzer_sock_to_index(fds[i].fd);
+		if (index < 0 ||
 		    !(fstate.fuffers[index].read || fstate.fuffers[index].write)) {
 			fds[i].revents = POLLNVAL;
 			return fds[i].fd;
@@ -127,8 +137,7 @@ static inline void fuzzer_fuffer_put(fuffer_t *f, uint8_t *buf, size_t len) {
 
 ssize_t fuzzer_recvfrom(int s, void *buf, size_t len, int flags,
 			struct sockaddr *from, socklen_t *fromlen) {
-	s--;
-	if (s < 0 || s >= fstate.n || !buf)
+	if ((fuzzer_sock_to_index(s)) < 0)
 		return -1;
 	fuffer_t *f = fstate.fuffers + s;
 	uint16_t blen = 0;
@@ -140,6 +149,8 @@ ssize_t fuzzer_recvfrom(int s, void *buf, size_t len, int flags,
 	}
 
 	uint8_t *buffer = fuzzer_fuffer_get(f, blen);
+	if (buffer == NULL)
+		return 0;
 
 	if ((flags & MSG_WAITALL) && len < blen) {
 		fuzzer_fuffer_put(f, NULL, blen + sizeof(uint16_t));
@@ -155,8 +166,7 @@ ssize_t fuzzer_recvfrom(int s, void *buf, size_t len, int flags,
 
 ssize_t fuzzer_sendto(int s, const void *msg, size_t len, int flags,
 		      const struct sockaddr *to, socklen_t tolen) {
-	s--;
-	if (s < 0 || s >= fstate.n || !msg)
+	if ((s = fuzzer_sock_to_index(s)) < 0)
 		return -1;
 	fuffer_t *f = fstate.fuffers + s;
 	if (!fuzzer_fuffer_writable(f))
@@ -165,8 +175,7 @@ ssize_t fuzzer_sendto(int s, const void *msg, size_t len, int flags,
 }
 
 int fuzzer_close(int s) {
-	s--;
-	if (s < 0 || s >= fstate.n)
+	if ((s = fuzzer_sock_to_index(s)) < 0)
 		return -1;
 	fstate.fuffers[s].open = 0;
 	return 0;
