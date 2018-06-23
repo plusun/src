@@ -39,8 +39,12 @@ __RCSID("$NetBSD: ping_hostops.c,v 1.2 2011/03/11 09:59:56 pooka Exp $");
 #include <unistd.h>
 
 #include "prog_ops.h"
+#ifdef ENABLE_FUZZER
+#include "fuzzer_ops.h"
+#endif
 
 const struct prog_ops prog_ops = {
+#ifndef ENABLE_FUZZER
 	.op_socket = socket,
 	.op_setsockopt = setsockopt,
 	.op_shutdown = shutdown,
@@ -48,6 +52,16 @@ const struct prog_ops prog_ops = {
 	.op_recvfrom = recvfrom,
 	.op_sendto = sendto,
 	.op_close = close,
+#else
+        .op_init = fuzzer_init,
+        .op_socket = fuzzer_socket,
+        .op_setsockopt = fuzzer_setsockopt,
+        .op_shutdown = fuzzer_shutdown,
+        .op_poll = fuzzer_poll,
+        .op_recvfrom = fuzzer_recvfrom,
+        .op_sendto = fuzzer_sendto,
+        .op_close = fuzzer_close,
+#endif
 	.op_getuid = getuid,
 	.op_setuid = setuid,
 };

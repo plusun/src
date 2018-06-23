@@ -1,15 +1,16 @@
 #ifdef ENABLE_FUZZER
 
-#include "prog_ops.h"
+#include <string.h>
 #include "fuzzer_ops.h"
+#include "prog_ops.h"
 
 struct {
 	fuffer_t *fuffers;
 	size_t n, used;
 } fstate = {
-	fuffers = NULL,
-	n = 0,
-	used = 0,
+	.fuffers = NULL,
+	.n = 0,
+	.used = 0,
 };
 
 static uint8_t **fuzzer_buffers = NULL;
@@ -56,8 +57,8 @@ int fuzzer_socket(int domain, int type, int protocol) {
 	return s + 1;
 }
 
-int fuzzer_setsocketopt(int s, int level, int optname,
-			const void *optval, socketlen_t optlen) { return 0; }
+int fuzzer_setsockopt(int s, int level, int optname,
+			const void *optval, socklen_t optlen) { return 0; }
 int fuzzer_shutdown(int s, int how) {
 	s--;
 	if (s < 0 || s >= fstate.n)
@@ -81,7 +82,7 @@ int fuzzer_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
 		short e = fds[i].events;
 		int index = fds[i].fd - 1;
 		if (index < 0 || index >= fstate.n ||
-		    !(fstate.fuzzers[index].read || fstate.fuzzers[index].write)) {
+		    !(fstate.fuffers[index].read || fstate.fuffers[index].write)) {
 			fds[i].revents = POLLNVAL;
 			return fds[i].fd;
 		}
@@ -112,7 +113,7 @@ int fuzzer_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
 }
 
 static uint8_t *fuzzer_fuffer_get(fuffer_t *f, size_t len) {
-	if (fuffzer_fuffer_size(f) < len)
+	if (fuzzer_fuffer_size(f) < len)
 		return NULL;
 	uint8_t *ret = fuzzer_fuffer_start(f);
 	f->off += len;
@@ -155,7 +156,7 @@ ssize_t fuzzer_recvfrom(int s, void *buf, size_t len, int flags,
 ssize_t fuzzer_sendto(int s, const void *msg, size_t len, int flags,
 		      const struct sockaddr *to, socklen_t tolen) {
 	s--;
-	if (s < 0 || s >= fstate.n || !buf)
+	if (s < 0 || s >= fstate.n || !msg)
 		return -1;
 	fuffer_t *f = fstate.fuffers + s;
 	if (!fuzzer_fuffer_writable(f))
