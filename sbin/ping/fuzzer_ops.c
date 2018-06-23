@@ -13,14 +13,12 @@ struct {
 	.used = 0,
 };
 
-static uint8_t **fuzzer_buffers = NULL;
-
 /* The format of "packet" is "|uint16_t|content|" */
 static inline size_t fuzzer_fuffer_size(fuffer_t *f) {
 	return f->len > f->off ? f->len - f->off : 0;
 }
 
-static inline uint8_t *fuzzer_fuffer_start(fuffer_t *f) {
+static inline const uint8_t *fuzzer_fuffer_start(fuffer_t *f) {
 	return f->buf + f->off;
 }
 
@@ -32,7 +30,7 @@ static inline int fuzzer_fuffer_writable(fuffer_t *f) {
 	return f->open && f->write;
 }
 
-void fuzzer_init_fuffer(fuffer_t *f, uint8_t *buf, size_t len) {
+void fuzzer_init_fuffer(fuffer_t *f, const uint8_t *buf, size_t len) {
 	f->len = len;
 	f->off = 0;
 	f->buf = buf;
@@ -122,15 +120,15 @@ int fuzzer_poll(struct pollfd *fds, nfds_t nfds, int timeout) {
 	return 0;
 }
 
-static uint8_t *fuzzer_fuffer_get(fuffer_t *f, size_t len) {
+static const uint8_t *fuzzer_fuffer_get(fuffer_t *f, size_t len) {
 	if (fuzzer_fuffer_size(f) < len)
 		return NULL;
-	uint8_t *ret = fuzzer_fuffer_start(f);
+	const uint8_t *ret = fuzzer_fuffer_start(f);
 	f->off += len;
 	return ret;
 }
 
-static inline void fuzzer_fuffer_put(fuffer_t *f, uint8_t *buf, size_t len) {
+static inline void fuzzer_fuffer_put(fuffer_t *f, const uint8_t *buf, size_t len) {
 	if (f->off >= len)
 		f->off -= len;
 }
@@ -142,13 +140,13 @@ ssize_t fuzzer_recvfrom(int s, void *buf, size_t len, int flags,
 	fuffer_t *f = fstate.fuffers + s;
 	uint16_t blen = 0;
 	while (blen == 0) {
-		uint8_t *pblen = fuzzer_fuffer_get(f, sizeof(uint16_t));
+		const uint8_t *pblen = fuzzer_fuffer_get(f, sizeof(uint16_t));
 		if (pblen == NULL)
 			return 0;
 		blen = *(uint16_t *)pblen;
 	}
 
-	uint8_t *buffer = fuzzer_fuffer_get(f, blen);
+	const uint8_t *buffer = fuzzer_fuffer_get(f, blen);
 	if (buffer == NULL)
 		return 0;
 

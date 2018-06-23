@@ -92,6 +92,9 @@ __RCSID("$NetBSD: ping.c,v 1.117 2017/10/02 10:08:11 maya Exp $");
 #include <netipsec/ipsec.h>
 #endif /*IPSEC*/
 
+#ifdef ENABLE_FUZZER
+#include "fuzzer_ops.h"
+#endif
 #include "prog_ops.h"
 
 #define FLOOD_INTVL	0.01		/* default flood output interval */
@@ -236,6 +239,7 @@ static void gethost(const char *, const char *,
 		    struct sockaddr_in *, char *, int);
 __dead static void usage(void);
 
+#ifndef ENABLE_FUZZER
 int
 main(int argc, char *argv[])
 {
@@ -732,6 +736,317 @@ main(int argc, char *argv[])
 	doit();
 	return 0;
 }
+#else
+static const uint8_t *buffer;
+static size_t blen;
+
+int fuzzer_init(void) {
+	fuffer_t f[2];
+	fuzzer_init_fuffer(&f[0], buffer, blen);
+	fuzzer_init_fuffer(&f[1], NULL, 0);
+	fuzzer_install_fuffers(f, 2);
+	return 0;
+}
+
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
+
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+	buffer = Data;
+	blen = Size;
+#ifdef IPSEC
+#ifdef IPSEC_POLICY_IPSEC
+	char *policy_in = NULL;
+	char *policy_out = NULL;
+#endif
+#endif
+#ifdef SIGINFO
+	struct sigaction sa;
+#endif
+	int i, len = -1, compat = 0, on = 1;
+	u_char ttl = 0;
+	u_long tos = 0;
+
+	if (prog_init && prog_init() == -1)
+		return 0;
+	if ((s = prog_socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
+		return 0;
+	if ((sloop = prog_socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
+		return 0;
+
+	if (prog_shutdown(sloop, SHUT_RD) == -1)
+		warn("Cannot shutdown for read");
+
+	if (prog_setuid(prog_getuid()) == -1)
+		return 0;
+	npackets = 1;
+	if (interval == 0)
+		interval = (pingflags & F_FLOOD) ? FLOOD_INTVL : 1.0;
+	if (pingflags & F_FLOOD && prog_getuid())
+		return 0;
+	if (interval < 1.0 && prog_getuid())
+		return 0;
+	if (preload > 0 && prog_getuid())
+		return 0;
+
+	sec_to_timespec(interval, &interval_tv);
+	if (interval_tv.tv_sec == 0 && interval_tv.tv_nsec == 0) {
+		return 0;
+	}
+
+	if ((pingflags & (F_AUDIBLE|F_FLOOD)) == (F_AUDIBLE|F_FLOOD))
+		return 0;
+
+	if (npackets != 0) {
+		npackets += preload;
+	} else {
+		npackets = INT_MAX;
+	}
+	gethost("", "localhost", &whereto, hostname, sizeof(hostname));
+	if (IN_MULTICAST(ntohl(whereto.sin_addr.s_addr)))
+		pingflags |= F_MCAST;
+	if (!(pingflags & F_SOURCE_ROUTE))
+		(void) memcpy(&send_addr, &whereto, sizeof(send_addr));
+
+	loc_addr.sin_family = AF_INET;
+	loc_addr.sin_len = sizeof(struct sockaddr_in);
+	loc_addr.sin_addr.s_addr = htonl((127 << 24) + 1);
+
+	if (len != -1)
+		datalen = len;
+	else
+		datalen = 64 - PHDR_LEN;
+	if (!compat && datalen >= (int)PHDR64_LEN) { /* can we time them? */
+		pingflags |= F_TIMING64;
+		phdrlen = PHDR64_LEN;
+	} else if (datalen >= (int)PHDR_LEN) {	/* can we time them? */
+		pingflags |= F_TIMING;
+		phdrlen = PHDR_LEN;
+	} else
+		phdrlen = 0;
+
+	packlen = datalen + 60 + 76;	/* MAXIP + MAXICMP */
+	if ((packet = malloc(packlen)) == NULL)
+		return 0;
+	if (pingflags & F_PING_FILLED) {
+		fill();
+	} else if (pingflags & F_PING_RANDOM) {
+		rnd_fill();
+	} else {
+		for (i = phdrlen; i < datalen; i++)
+			opack_icmp.icmp_data[i] = i;
+	}
+	ident = arc4random() & 0xFFFF;
+
+	if (options & SO_DEBUG) {
+		if (prog_setsockopt(s, SOL_SOCKET, SO_DEBUG,
+			       (char *)&on, sizeof(on)) == -1)
+			warn("Can't turn on socket debugging");
+	}
+	if (options & SO_DONTROUTE) {
+		if (prog_setsockopt(s, SOL_SOCKET, SO_DONTROUTE,
+			       (char *)&on, sizeof(on)) == -1)
+			warn("SO_DONTROUTE");
+	}
+
+	if (options & SO_DEBUG) {
+		if (prog_setsockopt(sloop, SOL_SOCKET, SO_DEBUG,
+			       (char *)&on, sizeof(on)) == -1)
+			warn("Can't turn on socket debugging");
+	}
+	if (options & SO_DONTROUTE) {
+		if (prog_setsockopt(sloop, SOL_SOCKET, SO_DONTROUTE,
+			       (char *)&on, sizeof(on)) == -1)
+			warn("SO_DONTROUTE");
+	}
+	if (pingflags & F_SOURCE_ROUTE) {
+		optspace[IPOPT_OPTVAL] = IPOPT_LSRR;
+		optspace[IPOPT_OLEN] = optlen = 7;
+		optspace[IPOPT_OFFSET] = IPOPT_MINOFF;
+		(void)memcpy(&optspace[IPOPT_MINOFF-1], &whereto.sin_addr,
+			     sizeof(whereto.sin_addr));
+		optspace[optlen++] = IPOPT_NOP;
+	}
+	if (pingflags & F_RECORD_ROUTE) {
+		optspace[optlen+IPOPT_OPTVAL] = IPOPT_RR;
+		optspace[optlen+IPOPT_OLEN] = (MAX_IPOPTLEN -1-optlen);
+		optspace[optlen+IPOPT_OFFSET] = IPOPT_MINOFF;
+		optlen = MAX_IPOPTLEN;
+	}
+	/* this leaves opack_ip 0(mod 4) aligned */
+	opack_ip = (struct ip *)((char *)&out_pack.o_ip
+				 + sizeof(out_pack.o_opt)
+				 - optlen);
+	(void) memcpy(opack_ip + 1, optspace, optlen);
+
+	if (prog_setsockopt(s, IPPROTO_IP, IP_HDRINCL,
+	    (char *) &on, sizeof(on)) < 0)
+		return 0;
+
+	opack_ip->ip_v = IPVERSION;
+	opack_ip->ip_hl = (sizeof(struct ip)+optlen) >> 2;
+	opack_ip->ip_tos = tos;
+	opack_ip->ip_off = (pingflags & F_DF) ? IP_DF : 0;
+	opack_ip->ip_ttl = ttl ? ttl : MAXTTL;
+	opack_ip->ip_p = IPPROTO_ICMP;
+	opack_ip->ip_src = src_addr.sin_addr;
+	opack_ip->ip_dst = send_addr.sin_addr;
+
+	if (pingflags & F_MCAST) {
+		if (pingflags & F_MCAST_NOLOOP) {
+			u_char loop = 0;
+			if (prog_setsockopt(s, IPPROTO_IP,
+			    IP_MULTICAST_LOOP,
+			    (char *) &loop, 1) < 0)
+				return 0;
+		}
+
+		if (ttl != 0
+		    && prog_setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL,
+		    (char *) &ttl, 1) < 0)
+			return 0;
+
+		if ((pingflags & F_SOURCE_ADDR)
+		    && prog_setsockopt(s, IPPROTO_IP, IP_MULTICAST_IF,
+				  (char *) &src_addr.sin_addr,
+				  sizeof(src_addr.sin_addr)) < 0)
+			return 0;
+
+	} else if (pingflags & F_SOURCE_ADDR) {
+		if (prog_setsockopt(s, IPPROTO_IP, IP_MULTICAST_IF,
+			       (char *) &src_addr.sin_addr,
+			       sizeof(src_addr.sin_addr)) < 0)
+			return 0;
+	}
+#ifdef IPSEC
+#ifdef IPSEC_POLICY_IPSEC
+    {
+	char *buf;
+	if (pingflags & F_POLICY) {
+		if (policy_in != NULL) {
+			buf = ipsec_set_policy(policy_in, strlen(policy_in));
+			if (buf == NULL)
+				return 0;
+			if (prog_setsockopt(s, IPPROTO_IP, IP_IPSEC_POLICY,
+					buf, ipsec_get_policylen(buf)) < 0) {
+				return 0;
+			}
+			free(buf);
+		}
+		if (policy_out != NULL) {
+			buf = ipsec_set_policy(policy_out, strlen(policy_out));
+			if (buf == NULL)
+				return 0;
+			if (prog_setsockopt(s, IPPROTO_IP, IP_IPSEC_POLICY,
+					buf, ipsec_get_policylen(buf)) < 0) {
+				return 0;
+			}
+			free(buf);
+		}
+	}
+	buf = ipsec_set_policy("out bypass", strlen("out bypass"));
+	if (buf == NULL)
+		return 0;
+	if (prog_setsockopt(sloop, IPPROTO_IP, IP_IPSEC_POLICY,
+			buf, ipsec_get_policylen(buf)) < 0) {
+#if 0
+		warnx("ipsec is not configured");
+#else
+		/* ignore it, should be okay */
+#endif
+	}
+	free(buf);
+    }
+#else
+    {
+	int optval;
+	if (pingflags & F_AUTHHDR) {
+		optval = IPSEC_LEVEL_REQUIRE;
+#ifdef IP_AUTH_TRANS_LEVEL
+		(void)prog_setsockopt(s, IPPROTO_IP, IP_AUTH_TRANS_LEVEL,
+			(char *)&optval, sizeof(optval));
+#else
+		(void)prog_setsockopt(s, IPPROTO_IP, IP_AUTH_LEVEL,
+			(char *)&optval, sizeof(optval));
+#endif
+	}
+	if (pingflags & F_ENCRYPT) {
+		optval = IPSEC_LEVEL_REQUIRE;
+		(void)prog_setsockopt(s, IPPROTO_IP, IP_ESP_TRANS_LEVEL,
+			(char *)&optval, sizeof(optval));
+	}
+	optval = IPSEC_LEVEL_BYPASS;
+#ifdef IP_AUTH_TRANS_LEVEL
+	(void)prog_setsockopt(sloop, IPPROTO_IP, IP_AUTH_TRANS_LEVEL,
+		(char *)&optval, sizeof(optval));
+#else
+	(void)prog_setsockopt(sloop, IPPROTO_IP, IP_AUTH_LEVEL,
+		(char *)&optval, sizeof(optval));
+#endif
+	(void)prog_setsockopt(sloop, IPPROTO_IP, IP_ESP_TRANS_LEVEL,
+		(char *)&optval, sizeof(optval));
+    }
+#endif /*IPSEC_POLICY_IPSEC*/
+#endif /*IPSEC*/
+
+	(void)printf("PING %s (%s): %d data bytes\n", hostname,
+		     inet_ntoa(whereto.sin_addr), datalen);
+
+	/* When pinging the broadcast address, you can get a lot
+	 * of answers.  Doing something so evil is useful if you
+	 * are trying to stress the ethernet, or just want to
+	 * fill the arp cache to get some stuff for /etc/ethers.
+	 */
+	while (0 > prog_setsockopt(s, SOL_SOCKET, SO_RCVBUF,
+			      (char*)&bufspace, sizeof(bufspace))) {
+		if ((bufspace -= 4096) <= 0)
+			return 0;
+	}
+
+	/* make it possible to send giant probes, but do not worry now
+	 * if it fails, since we probably won't send giant probes.
+	 */
+	(void)prog_setsockopt(s, SOL_SOCKET, SO_SNDBUF,
+			 (char*)&bufspace, sizeof(bufspace));
+
+	(void)signal(SIGINT, prefinish);
+
+	/*
+	 * Set up two signal masks:
+	 *    - blockmask blocks the signals we catch
+	 *    - enablemask does not
+	 */
+
+	sigemptyset(&enablemask);
+	sigemptyset(&blockmask);
+	sigaddset(&blockmask, SIGINT);
+#ifdef SIGINFO
+	sigaddset(&blockmask, SIGINFO);
+#else
+	sigaddset(&blockmask, SIGQUIT);
+#endif
+
+#ifdef SIGINFO
+	sa.sa_handler = prtsig;
+	sa.sa_flags = SA_NOKERNINFO;
+	sigemptyset(&sa.sa_mask);
+	(void)sigaction(SIGINFO, &sa, NULL);
+#else
+	(void)signal(SIGQUIT, prtsig);
+#endif
+	(void)signal(SIGCONT, prtsig);
+
+	blocksignals();
+
+	/* fire off them quickies */
+	for (i = 0; i < preload; i++) {
+		clock_gettime(CLOCK_MONOTONIC, &now);
+		pinger();
+	}
+
+	doit();
+	return 0;
+}
+#endif
 
 static void
 doit(void)

@@ -11,7 +11,7 @@ DPADD=	${LIBM}
 CPPFLAGS+=	-DIPSEC
 LDADD+= -lipsec
 DPADD+= ${LIBIPSEC}
-SRCS+= fuzzer_ops.c
+SRCS= fuzzer_ops.c ping.c
 
 .if ${MACHINE_ARCH} == "vax"
 COPTS.ping.c=-O0
