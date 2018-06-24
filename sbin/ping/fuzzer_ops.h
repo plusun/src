@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <poll.h>
+#include <setjmp.h>
 
 typedef struct s_fuzzer_buffer_t {
 	size_t len, off;
@@ -28,5 +29,9 @@ ssize_t fuzzer_recvfrom(int s, void *buf, size_t len, int flags,
 ssize_t fuzzer_sendto(int s, const void *msg, size_t len, int flags,
 		      const struct sockaddr *to, socklen_t tolen);
 int fuzzer_close(int s);
+
+extern jmp_buf fuzzer_exit;
+#define exit(...) longjmp(fuzzer_exit, 1)
+#define err(...) longjmp(fuzzer_exit, 1)
 
 #endif

@@ -749,7 +749,7 @@ int fuzzer_init(void) {
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
-
+jmp_buf fuzzer_exit;
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
 	buffer = Data;
 	blen = Size;
@@ -766,6 +766,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
 	u_char ttl = 0;
 	u_long tos = 0;
 
+	if (setjmp(fuzzer_exit))
+		return 0;
 	if (prog_init && prog_init() == -1)
 		return 0;
 	if ((s = prog_socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
