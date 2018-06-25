@@ -748,6 +748,37 @@ int fuzzer_init(void) {
 	return 0;
 }
 
+size_t LLVMFuzzerCustomMutator(uint8_t *Data, size_t Size,
+			       size_t MaxSize, unsigned int Seed);
+size_t LLVMFuzzerCustomMutator(uint8_t *Data, size_t Size,
+			       size_t MaxSize, unsigned int Seed) {
+	srandom(Seed);
+	Size = (uint16_t)random();
+	if (Size > MaxSize - sizeof(uint16_t))
+		Size = MaxSize - sizeof(uint16_t);
+	*(uint16_t *)Data = (uint16_t)Size;
+	size_t i;
+	for (i = 0; i < Size; i++)
+		Data[i + sizeof(uint16_t)] = (uint8_t)random();
+	return Size + sizeof(uint16_t);
+}
+
+LLVMFuzzerCustomCrossOver(const uint8_t *Data1, size_t Size1,
+                          const uint8_t *Data2, size_t Size2, uint8_t *Out,
+                          size_t MaxOutSize, unsigned int Seed);
+
+LLVMFuzzerCustomCrossOver(const uint8_t *Data1, size_t Size1,
+                          const uint8_t *Data2, size_t Size2, uint8_t *Out,
+                          size_t MaxOutSize, unsigned int Seed) {
+	Size1 -= sizeof(uint16_t);
+	Size2 -= sizeof(uint16_t);
+	size_t Size = Size1 / 2 + Size2 / 2;
+	*(uint16_t *)Out = (uint16_t)Size;
+	memcpy(Out + sizeof(uint16_t), Data1, Size1 / 2);
+	memcpy(Out + sizeof(uint16_t) + Size1 / 2, Data2, Size2 / 2);
+	return Size + sizeof(uint16_t);
+}
+
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
 jmp_buf fuzzer_exit;
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
