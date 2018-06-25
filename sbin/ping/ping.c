@@ -763,13 +763,13 @@ size_t LLVMFuzzerCustomMutator(uint8_t *Data, size_t Size,
 	return Size + sizeof(uint16_t);
 }
 
-LLVMFuzzerCustomCrossOver(const uint8_t *Data1, size_t Size1,
-                          const uint8_t *Data2, size_t Size2, uint8_t *Out,
-                          size_t MaxOutSize, unsigned int Seed);
+size_t LLVMFuzzerCustomCrossOver(const uint8_t *Data1, size_t Size1,
+				 const uint8_t *Data2, size_t Size2, uint8_t *Out,
+				 size_t MaxOutSize, unsigned int Seed);
 
-LLVMFuzzerCustomCrossOver(const uint8_t *Data1, size_t Size1,
-                          const uint8_t *Data2, size_t Size2, uint8_t *Out,
-                          size_t MaxOutSize, unsigned int Seed) {
+size_t LLVMFuzzerCustomCrossOver(const uint8_t *Data1, size_t Size1,
+				 const uint8_t *Data2, size_t Size2, uint8_t *Out,
+				 size_t MaxOutSize, unsigned int Seed) {
 	Size1 -= sizeof(uint16_t);
 	Size2 -= sizeof(uint16_t);
 	size_t Size = Size1 / 2 + Size2 / 2;
