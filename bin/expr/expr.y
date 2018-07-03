@@ -485,6 +485,20 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   free(argv);
   return 0;
 }
+
+int main(int argc, const char * const *argv)
+{
+	setprogname(argv[0]);
+	(void)setlocale(LC_ALL, "");
+#define N 4096
+	uint8_t arr[N];
+	ssize_t ret = read(0, arr, N - 1);
+	if (ret > 0) {
+		arr[ret] = 0;
+		return LLVMFuzzerTestOneInput(arr, ret);
+	}
+	return 0;
+}
 #else
 
 int
