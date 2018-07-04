@@ -780,7 +780,6 @@ size_t LLVMFuzzerCustomCrossOver(const uint8_t *Data1, size_t Size1,
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
-jmp_buf fuzzer_exit;
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
 	buffer = Data;
 	blen = Size;
@@ -796,9 +795,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
 	int i, len = -1, compat = 0, on = 1;
 	u_char ttl = 0;
 	u_long tos = 0;
+	maxwait = 0.5;
 
-	if (setjmp(fuzzer_exit))
-		return 0;
 	if (prog_init && prog_init() == -1)
 		return 0;
 	if ((s = prog_socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
@@ -1079,6 +1077,20 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
 	doit();
 	return 0;
 }
+
+int main(int argc, const char * const *argv)
+{
+	setprogname(argv[0]);
+#define N 8192
+	uint8_t arr[N];
+	ssize_t ret = read(0, arr, N - 1);
+	if (ret > 0) {
+		arr[ret] = 0;
+		return LLVMFuzzerTestOneInput(arr, ret);
+	}
+	return 0;
+}
+
 #endif
 
 static void
