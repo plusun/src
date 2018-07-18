@@ -1,6 +1,5 @@
-#ifdef ENABLE_FUZZER
-
 #include <string.h>
+#include <stdio.h>
 #include "fuzzer_ops.h"
 #include "prog_ops.h"
 
@@ -14,11 +13,12 @@ struct {
 };
 fuffer_t f[2];
 
-extern HF_ITER(uint8_t** buf, size_t* len);
+extern void HF_ITER(uint8_t** buf, size_t* len);
 
 int fuzzer_init(void) {
         uint8_t *buf;
         size_t len;
+        printf("hi!\n");
         HF_ITER(&buf, &len);
 	fuzzer_init_fuffer(&f[0], buf, len);
 	fuzzer_init_fuffer(&f[1], NULL, 0);
@@ -212,5 +212,3 @@ int close(int s) {
 	fstate.fuffers[s].open = 0;
 	return 0;
 }
-
-#endif
