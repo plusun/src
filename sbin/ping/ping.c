@@ -270,8 +270,8 @@ main(int argc, char *argv[])
 	if (prog_shutdown(sloop, SHUT_RD) == -1)
 		warn("Cannot shutdown for read");
 
-	/* if (prog_setuid(prog_getuid()) == -1) */
-	/* 	err(EXIT_FAILURE, "setuid"); */
+	if (prog_setuid(prog_getuid()) == -1)
+		err(EXIT_FAILURE, "setuid");
 
 	setprogname(argv[0]);
 
