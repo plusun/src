@@ -18,7 +18,6 @@ extern void HF_ITER(uint8_t** buf, size_t* len);
 int fuzzer_init(void) {
         uint8_t *buf;
         size_t len;
-        printf("hi!\n");
         HF_ITER(&buf, &len);
 	fuzzer_init_fuffer(&f[0], buf, len);
 	fuzzer_init_fuffer(&f[1], NULL, 0);
@@ -203,12 +202,3 @@ ssize_t sendto(int s, const void *msg, size_t len, int flags,
 	return len;
 }
 
-int close(int s) {
-        if (!fstate.fuffers) {
-                fuzzer_init();
-        }
-	if ((s = fuzzer_sock_to_index(s)) < 0)
-		return -1;
-	fstate.fuffers[s].open = 0;
-	return 0;
-}
