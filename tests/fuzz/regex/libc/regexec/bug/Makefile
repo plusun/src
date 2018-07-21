@@ -11,7 +11,6 @@ SRCS+=	main.c
 .PATH:  ${NETBSDSRCDIR}/lib/libc/regex
 SRCS+=	regcomp.c regerror.c regexec.c regfree.c regsub.c
 
-CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include -static
-LDFLAGS+= -static
+CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include -D_REPRODUCE_
 
 .include <bsd.prog.mk>

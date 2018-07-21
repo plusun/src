@@ -8,8 +8,8 @@ SRCS=   fuzz_regexec.c
 .PATH:  ${NETBSDSRCDIR}/lib/libc/regex
 SRCS+=	regcomp.c regerror.c regexec.c regfree.c regsub.c
 
-CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include -static
-LDFLAGS+= -static
+CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include
+NOMAN=	# defined
 
 fuzz: fuzz_regexec
 	./fuzz_regexec -only_ascii=1  -dict=./dict ./input > /dev/null

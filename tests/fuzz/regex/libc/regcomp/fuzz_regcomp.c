@@ -7,8 +7,9 @@
 
 void init(const char *d, int flag) {
     regex_t reg;
-    regcomp(&reg, d, flag);
-    regfree(&reg);
+    if (regcomp(&reg, d, flag) == 0) {
+        regfree(&reg);
+    }
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
