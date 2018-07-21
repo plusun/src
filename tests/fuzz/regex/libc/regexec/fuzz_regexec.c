@@ -45,8 +45,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         // just continue the execution of free and regfree
     }
 
-    free(d);
     regfree(&reg);
+    free(d);
 
     return 0;
 }
