@@ -8,7 +8,7 @@ SRCS=   fuzz_regcomp.c
 .PATH:  ${NETBSDSRCDIR}/lib/libc/regex
 SRCS+=	regcomp.c regerror.c regexec.c regfree.c regsub.c
 
-CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include
+CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include -Dregnsub=__mkfuzzer_regnsub -Dregasub=__mkfuzzer_regasub
 
 fuzz: fuzz_regcomp
 	./fuzz_regcomp -only_ascii=1  -dict=./dict ./input > /dev/null

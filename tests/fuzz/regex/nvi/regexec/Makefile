@@ -8,7 +8,7 @@ SRCS=   fuzz_regexec.c
 .PATH:  ${NETBSDSRCDIR}/external/bsd/nvi/dist/regex
 SRCS+=	regcomp.c regerror.c regexec.c regfree.c
 
-CPPFLAGS+= -I${NETBSDSRCDIR}/external/bsd/nvi/usr.bin/nvi -I${NETBSDSRCDIR}/external/bsd/nvi/dist/regex -D__REGEX_PRIVATE -DUSE_WIDECHAR
+CPPFLAGS+= -I${NETBSDSRCDIR}/external/bsd/nvi/usr.bin/nvi -I${NETBSDSRCDIR}/external/bsd/nvi/dist/regex -D__REGEX_PRIVATE -DUSE_WIDECHAR -Dregcomp=__mkfuzzer_regcomp -Dregerror=__mkfuzzer_regerror -Dregexec=__mkfuzzer_regexec -Dregfree=__mkfuzzer_regfree -g
 
 fuzz: fuzz_regexec
 	./fuzz_regexec -only_ascii=1  -dict=./dict ./input > /dev/null
