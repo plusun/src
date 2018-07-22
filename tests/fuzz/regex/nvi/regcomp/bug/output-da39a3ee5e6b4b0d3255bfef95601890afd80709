@@ -1,0 +1,53 @@
+root@localhost % ./main crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+=================================================================
+==18866==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000031 at pc 0x0000004cb0c5 bp 0x7f7fffffddd0 sp 0x7f7fffffd578
+READ of size 4 at 0x602000000031 thread T0
+    #0 0x4cb0c4  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x4cb0c4)
+    #1 0x41d8f2  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d8f2)
+    #2 0x41d0ea  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d0ea)
+    #3 0x41d273  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d273)
+    #4 0x41d4cb  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d4cb)
+    #5 0x41ceb0  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41ceb0)
+
+0x602000000031 is located 0 bytes to the right of 1-byte region [0x602000000030,0x602000000031)
+allocated by thread T0 here:
+    #0 0x54f243  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x54f243)
+    #1 0x41d17f  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d17f)
+    #2 0x41d4cb  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d4cb)
+    #3 0x41ceb0  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41ceb0)
+    #4 0x7f7ff7ef8fff  (<unknown module>)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x4cb0c4)
+Shadow bytes around the buggy address:
+  0x4c03ffffffb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x4c03ffffffc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x4c03ffffffd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x4c03ffffffe0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x4c03fffffff0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x4c0400000000: fa fa 01 fa fa fa[01]fa fa fa fa fa fa fa fa fa
+  0x4c0400000010: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400000020: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400000030: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400000040: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400000050: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==18866==ABORTING
