@@ -1,23 +1,23 @@
 root@localhost % ./main crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
 =================================================================
-==18866==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000031 at pc 0x0000004cb0c5 bp 0x7f7fffffddd0 sp 0x7f7fffffd578
+==667==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000031 at pc 0x0000004cb0c5 bp 0x7f7fffffddf0 sp 0x7f7fffffd598
 READ of size 4 at 0x602000000031 thread T0
-    #0 0x4cb0c4  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x4cb0c4)
-    #1 0x41d8f2  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d8f2)
-    #2 0x41d0ea  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d0ea)
-    #3 0x41d273  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d273)
-    #4 0x41d4cb  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d4cb)
-    #5 0x41ceb0  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41ceb0)
+    #0 0x4cb0c4 in __interceptor_wcslen /public/llvm/projects/compiler-rt/lib/asan/../sanitizer_common/sanitizer_common_interceptors.inc:6529:3
+    #1 0x41d8f2 in __mkfuzzer_regcomp /public/src/external/bsd/nvi/dist/regex/regcomp.c:219:9
+    #2 0x41d0ea in init /public/src/tests/fuzz/regex/nvi/regcomp/bug/../fuzz_regcomp.c:10:9
+    #3 0x41d273 in LLVMFuzzerTestOneInput /public/src/tests/fuzz/regex/nvi/regcomp/bug/../fuzz_regcomp.c:19:5
+    #4 0x41d4cb in main /public/src/tests/fuzz/regex/nvi/regcomp/bug/../../../../main.c:24:12
+    #5 0x41ceb0 in ___start (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41ceb0)
 
 0x602000000031 is located 0 bytes to the right of 1-byte region [0x602000000030,0x602000000031)
 allocated by thread T0 here:
-    #0 0x54f243  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x54f243)
-    #1 0x41d17f  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d17f)
-    #2 0x41d4cb  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41d4cb)
-    #3 0x41ceb0  (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41ceb0)
-    #4 0x7f7ff7ef8fff  (<unknown module>)
+    #0 0x54f243 in __interceptor_malloc /public/llvm/projects/compiler-rt/lib/asan/asan_malloc_linux.cc:121:3
+    #1 0x41d17f in LLVMFuzzerTestOneInput /public/src/tests/fuzz/regex/nvi/regcomp/bug/../fuzz_regcomp.c:16:23
+    #2 0x41d4cb in main /public/src/tests/fuzz/regex/nvi/regcomp/bug/../../../../main.c:24:12
+    #3 0x41ceb0 in ___start (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41ceb0)
+    #4 0x7f7ff7c01c7f  (/libexec/ld.elf_so+0x1c7f)
 
-SUMMARY: AddressSanitizer: heap-buffer-overflow (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x4cb0c4)
+SUMMARY: AddressSanitizer: heap-buffer-overflow /public/llvm/projects/compiler-rt/lib/asan/../sanitizer_common/sanitizer_common_interceptors.inc:6529:3 in __interceptor_wcslen
 Shadow bytes around the buggy address:
   0x4c03ffffffb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   0x4c03ffffffc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -50,4 +50,5 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Left alloca redzone:     ca
   Right alloca redzone:    cb
   Shadow gap:              cc
-==18866==ABORTING
+==667==ABORTING
+
