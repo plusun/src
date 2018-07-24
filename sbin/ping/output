@@ -1,0 +1,42 @@
+------------------------[  0 days 00 hrs 00 mins 00 secs ]----------------------
+  Iterations : 6
+        Mode : [1/2] Feedback Driven Dry Run
+      Target : ./ping -c 1 127.0.0.1
+     Threads : 8, CPUs: 16, CPU%: 0% [0%/CPU]
+       Speed : 200/sec [avg: 0]
+     Crashes : 0 [unique: 0, blacklist: 0, verified: 0]
+    Timeouts : 0 [10 sec]
+ Corpus Size : 0, max size: 8,192 bytes, init dir: 2 files
+  Cov Update : 0 days 00 hrs 00 mins 00 secs ago
+    Coverage : edge: 0 pc: 0 cmp: 0
+---------------------------------- [ LOGS ] ------------------/ honggfuzz 1.6 /-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Entering phase 1/2: Dry Run
+Launched new fuzzing thread, no. #0
+Launched new fuzzing thread, no. #1
+Launched new fuzzing thread, no. #3
+Launched new fuzzing thread, no. #2
+Launched new fuzzing thread, no. #4
+Launched new fuzzing thread, no. #5
+Persistent mode: Launched new persistent PID: 16469
+Persistent mode: Launched new persistent PID: 7206
+[2018-07-24T13:46:56+0000][F][24118] HonggfuzzFetchData():75 readFromFd(rcvLen, size=8) failed
+[2018-07-24T13:46:56+0000][F][24118] HonggfuzzFetchData():75 readFromFd(rcvLen, size=8) failed
