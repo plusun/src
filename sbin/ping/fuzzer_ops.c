@@ -202,3 +202,4 @@ ssize_t sendto(int s, const void *msg, size_t len, int flags,
 	return len;
 }
 
+int close(int fd) { return 0; }
