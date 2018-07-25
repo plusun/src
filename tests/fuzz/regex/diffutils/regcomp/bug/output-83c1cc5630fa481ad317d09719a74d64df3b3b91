@@ -1,0 +1,3 @@
+root@localhost % ./main crash-83c1cc5630fa481ad317d09719a74d64df3b3b91
+/public/src/external/gpl2/diffutils/dist/lib/regex.c:4848:11: runtime error: left shift of negative value -1
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /public/src/external/gpl2/diffutils/dist/lib/regex.c:4848:11 in
