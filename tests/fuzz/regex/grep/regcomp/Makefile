@@ -6,12 +6,15 @@
 PROG=   fuzz_regcomp
 SRCS=   fuzz_regcomp.c
 .PATH:  ${NETBSDSRCDIR}/external/gpl2/grep/dist/lib
-SRCS+=	regex.c
-.PATH:  ${NETBSDSRCDIR}/external/gpl2/grep/dist/intl
+# SRCS+=	regex.c 
+SRCS+=  hard-locale.c isdir.c \
+	regex.c stpcpy.c \
+	xstrtoumax.c
+# .PATH:  ${NETBSDSRCDIR}/external/gpl2/grep/dist/intl
 
-CPPFLAGS+=-I${NETBSDSRCDIR}/external/gpl2/grep/dist/lib/posix -g -Wall -Werror -DLOCALEDIR=\"/usr/share/locale\" -DHAVE_CONFIG_H -I${NETBSDSRCDIR}/external/gpl2/grep/include
+CPPFLAGS+=-g -I${NETBSDSRCDIR}/external/gpl2/grep/dist/lib/ -DLOCALEDIR=\"/usr/share/locale\" -DHAVE_CONFIG_H -I${NETBSDSRCDIR}/external/gpl2/grep/include -I${NETBSDSRCDIR}/external/gpl2/grep/dist/src/ -Dgettext=__MKFUZZER_gettext -Dregfree=__MKFUZZER_regfree -Dregcomp=__MKFUZZER_regcomp -Dregexec=__MKFUZZER_regexec -Dregerror=__MKFUZZER_regerror
 
 fuzz: fuzz_regcomp
-	./fuzz_regcomp -only_ascii=1  -dict=./dict ./input > /dev/null
+	export UBSAN_OPTIONS=halt_on_error=1 && ./fuzz_regcomp -only_ascii=1  -dict=./dict ./input > /dev/null
 
 .include <bsd.prog.mk>
