@@ -1,0 +1,3 @@
+root@localhost % ./main crash-f7f52ad7534bf60e1ca3063d031138f838a9ee38
+/public/src/external/gpl2/grep/dist/lib/regex.c:4759:11: runtime error: left shift of negative value -1
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /public/src/external/gpl2/grep/dist/lib/regex.c:4759:11 in
