@@ -1,0 +1,18 @@
+UndefinedBehaviorSanitizer:DEADLYSIGNAL
+==25755==ERROR: UndefinedBehaviorSanitizer: SEGV on unknown address 0x000000000000 (pc 0x000000412b2b bp 0x7f7fffffd060 sp 0x7f7fffffcf00 T1)
+==25755==The signal is caused by a READ memory access.
+==25755==Hint: address points to the zero page.
+    #0 0x412b2a in tre_match_empty /public/src/external/bsd/tre/dist/lib/tre-compile.c:1259:17
+        #1 0x46e128 in __sanitizer::HandleDeadlySignal(void*, void*, unsigned int, void (*)(__sanitizer::SignalContext const&, void const*, __sanitizer::BufferedStackTrace*), void const*) /public/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_symbolizer_report.cc:234:3
+
+UndefinedBehaviorSanitizer can not provide additional info.
+==25755==ABORTING
+MS: 2 ChangeASCIIInt-ManualDict- DE: "+"-; base unit: 6735f1c4f939e8b7ff4a9814913e24b54e3b6688
+0x2a,0x5c,0x7b,0x31,0x2b,0x2c,0x20,0x5c,0x7d,0x5c,0x7b,0x32,0x2c,0x20,0x5c,0x7d,
+*\\{1+, \\}\\{2, \\}
+artifact_prefix='./'; Test unit written to ./crash-5af0c7b1443df5b7824086851d5ce0c62c83185f
+Base64: Klx7MSssIFx9XHsyLCBcfQ==
+*** Error code 1
+
+Stop.
+make: stopped in /public/src/tests/fuzz/regex/agrep/regcomp
