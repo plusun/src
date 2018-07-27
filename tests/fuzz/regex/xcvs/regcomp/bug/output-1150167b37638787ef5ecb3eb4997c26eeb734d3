@@ -1,0 +1,11 @@
+UndefinedBehaviorSanitizer:DEADLYSIGNAL
+==4023==ERROR: UndefinedBehaviorSanitizer: stack-overflow on address 0x7f7fffbfefd0 (pc 0x00000041d9f6 bp 0x7f7fffbff030 sp 0x7f7fffbfef00 T1)
+    #0 0x41d9f5 in re_dfa_add_node /public/src/external/gpl2/xcvs/dist/lib/regex_internal.c:1328:7
+        #1 0x477e38 in __sanitizer::HandleDeadlySignal(void*, void*, unsigned int, void (*)(__sanitizer::SignalContext const&, void const*, __sanitizer::BufferedStackTrace*), void const*) /public/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_symbolizer_report.cc:234:3
+
+==4023==ABORTING
+MS: 1 CopyPart-; base unit: 03066ec770d508c1d9db65dac0f5a15132427309
+0x5e,0x53,0x5c,0x7b,0x2c,0x32,0x37,0x31,0x37,0x31,0x2c,0x39,0x24,0x24,0x24,0x24,0x7c,
+^S\\{,27171,9$$$$|
+artifact_prefix='./'; Test unit written to ./crash-1150167b37638787ef5ecb3eb4997c26eeb734d3
+Base64: XlNceywyNzE3MSw5JCQkJHw=
