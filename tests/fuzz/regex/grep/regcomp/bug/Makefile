@@ -12,6 +12,8 @@ SRCS+=	main.c
 SRCS+=  hard-locale.c isdir.c \
 	regex.c stpcpy.c \
 	xstrtoumax.c
+CFLAGS= -fsanitize=address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=address,undefined -Wall -Werror
 CPPFLAGS+=-g -I${NETBSDSRCDIR}/external/gpl2/grep/dist/lib/ -DLOCALEDIR=\"/usr/share/locale\" -DHAVE_CONFIG_H -I${NETBSDSRCDIR}/external/gpl2/grep/include -I${NETBSDSRCDIR}/external/gpl2/grep/dist/src/ -Dgettext=__MKFUZZER_gettext -Dregfree=__MKFUZZER_regfree -Dregcomp=__MKFUZZER_regcomp -Dregexec=__MKFUZZER_regexec -Dregerror=__MKFUZZER_regerror
 
 CPPFLAGS+= -g -I${NETBSDSRCDIR}/external/gpl2/grep/dist/lib/

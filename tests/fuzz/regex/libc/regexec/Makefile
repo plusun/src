@@ -8,6 +8,8 @@ SRCS=   fuzz_regexec.c
 .PATH:  ${NETBSDSRCDIR}/lib/libc/regex
 SRCS+=	regcomp.c regerror.c regexec.c regfree.c regsub.c
 
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
 CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include -Dregnsub=__mkfuzzer_regnsub -Dregasub=__mkfuzzer_regasub -g
 NOMAN=	# defined
 

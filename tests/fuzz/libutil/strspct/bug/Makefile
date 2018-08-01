@@ -11,6 +11,7 @@ SRCS+=	strpct.c
 .PATH: 	../../../
 SRCS+=	main.c
 
-CPPFLAGS+=-Wall -Werror
+CFLAGS= -fsanitize=address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=address,undefined -Wall -Werror
 
 .include <bsd.prog.mk>

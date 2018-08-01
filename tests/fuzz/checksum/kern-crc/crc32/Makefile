@@ -9,6 +9,8 @@ SRCS=   fuzz_crc32.c
 .PATH:	${NETBSDSRCDIR}/sys/lib/libkern
 SRCS+=	crc32.c
 
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
 CPPFLAGS+=-I${NETBSDSRCDIR}/sys/
 
 fuzz: fuzz_crc32

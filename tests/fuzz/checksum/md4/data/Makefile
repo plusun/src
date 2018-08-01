@@ -11,6 +11,8 @@ SRCS+=	md4hl.c
 .PATH: ${NETBSDSRCDIR}/common/lib/libc/md/
 SRCS+=	md4c.c
 
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
 CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include
 
 fuzz: fuzz_md4

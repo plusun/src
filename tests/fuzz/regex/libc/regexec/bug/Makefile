@@ -11,6 +11,8 @@ SRCS+=	main.c
 .PATH:  ${NETBSDSRCDIR}/lib/libc/regex
 SRCS+=	regcomp.c regerror.c regexec.c regfree.c regsub.c
 
+CFLAGS= -fsanitize=address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=address,undefined -Wall -Werror
 CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include -D_REPRODUCE_
 
 .include <bsd.prog.mk>

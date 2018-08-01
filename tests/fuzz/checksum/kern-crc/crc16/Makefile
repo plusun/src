@@ -7,6 +7,9 @@ PROG=   fuzz_crc16
 SRCS=   fuzz_crc16.c
 
 CPPFLAGS+=-I${NETBSDSRCDIR}/sys/lib/libkern
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
+
 
 fuzz: fuzz_crc16
 	./fuzz_crc16 ./input > /dev/null

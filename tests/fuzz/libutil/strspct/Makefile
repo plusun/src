@@ -8,7 +8,8 @@ SRCS=   fuzz_strspct.c
 .PATH:  ${NETBSDSRCDIR}/lib/libutil
 SRCS+=	strpct.c
 
-CPPFLAGS+=-Wall -Werror
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
 
 fuzz: fuzz_strspct
 	export UBSAN_OPTIONS=halt_on_error=1 && ./fuzz_strspct -only_ascii ./input > /dev/null

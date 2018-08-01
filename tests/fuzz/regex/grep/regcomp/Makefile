@@ -12,6 +12,8 @@ SRCS+=  hard-locale.c isdir.c \
 	xstrtoumax.c
 # .PATH:  ${NETBSDSRCDIR}/external/gpl2/grep/dist/intl
 
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
 CPPFLAGS+=-g -I${NETBSDSRCDIR}/external/gpl2/grep/dist/lib/ -DLOCALEDIR=\"/usr/share/locale\" -DHAVE_CONFIG_H -I${NETBSDSRCDIR}/external/gpl2/grep/include -I${NETBSDSRCDIR}/external/gpl2/grep/dist/src/ -Dgettext=__MKFUZZER_gettext -Dregfree=__MKFUZZER_regfree -Dregcomp=__MKFUZZER_regcomp -Dregexec=__MKFUZZER_regexec -Dregerror=__MKFUZZER_regerror
 
 fuzz: fuzz_regcomp

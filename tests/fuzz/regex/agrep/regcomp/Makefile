@@ -10,6 +10,8 @@ SRCS+=	regcomp.c regerror.c regexec.c
 SRCS+=	tre-compile.c tre-stack.c tre-mem.c tre-ast.c tre-match-backtrack.c tre-match-approx.c tre-match-parallel.c tre-parse.c
 # .PATH:  ${NETBSDSRCDIR}/external/gpl2/grep/dist/intl
 
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
 CPPFLAGS+=-g -I${NETBSDSRCDIR}/external/bsd/tre/dist/lib/ -I${NETBSDSRCDIR}/external/bsd/tre/include -DHAVE_CONFIG_H=1 -DTRE_SYSTEM_REGEX_H_PATH=\"${NETBSDSRCDIR}/include/regex.h\" -DTRE_USE_SYSTEM_REGEX_H=1 -DTRE_REGEX_T_FIELD=re_g
 
 fuzz: fuzz_regcomp

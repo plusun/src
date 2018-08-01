@@ -10,6 +10,9 @@ SRCS=   fuzz_crc.c
 SRCS+=	crc.c
 
 CPPFLAGS+=-I${NETBSDSRCDIR}/usr.bin/cksum/
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
+
 
 fuzz: fuzz_crc
 	./fuzz_crc ./input > /dev/null

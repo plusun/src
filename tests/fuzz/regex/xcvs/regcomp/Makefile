@@ -17,6 +17,8 @@ CWARNFLAGS.clang+=      -Wno-tautological-compare -Wno-parentheses \
                         -Wno-tautological-constant-out-of-range-compare
 
 
+CFLAGS= -fsanitize=fuzzer-no-link -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer -Wall -Werror
 CPPFLAGS+=-g -I${NETBSDSRCDIR}/external/gpl2/xcvs/dist/lib/ -DSETXID_SUPPORT -DHAVE_CONFIG_H -I${NETBSDSRCDIR}/external/gpl2/xcvs/include
 
 fuzz: fuzz_regcomp

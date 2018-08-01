@@ -8,6 +8,8 @@ SRCS=   fuzz_regcomp.c
 .PATH:  ${NETBSDSRCDIR}/external/gpl2/diffutils/dist/lib
 SRCS+=	regex.c 
 IDIST=  ${NETBSDSRCDIR}/external/gpl2/diffutils/dist
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
 CPPFLAGS+=-g -DLOCALEDIR=\"/usr/share/locale\" -DHAVE_CONFIG_H \
           -I${IDIST}/../include -I${IDIST}/lib -Dregfree=__MKFUZZER_regfree \
 	  -Dregexec=__MKFUZZER_regexec -Dregcomp=__MKFUZZER_regcomp -Dregerror=__MKFUZZER_regerror

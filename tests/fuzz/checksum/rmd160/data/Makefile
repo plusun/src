@@ -11,6 +11,8 @@ SRCS+=	rmd160hl.c
 .PATH: ${NETBSDSRCDIR}/common/lib/libc/hash/rmd160
 SRCS+=	rmd160.c
 
+CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror
+LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror
 CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include
 
 fuzz: fuzz_rmd160
