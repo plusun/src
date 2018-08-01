@@ -1,0 +1,3 @@
+root@localhost % ./main crash-4345df5f8e0b779461e44216f29126de456bd4c0
+/public/src/lib/libutil/strpct.c:75:15: runtime error: negation of -9223372036854775808 cannot be represented in type 'intmax_t' (aka 'long'); cast to an unsigned type to negate this value to itself
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /public/src/lib/libutil/strpct.c:75:15 in
