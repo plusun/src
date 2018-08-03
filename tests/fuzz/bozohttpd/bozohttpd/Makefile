@@ -12,6 +12,6 @@ CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror -I${NETBSDSRCD
 LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror -lssl -llua
 
 fuzz: fuzz_bozohttpd
-	export UBSAN_OPTIONS=halt_on_error=1 && ./fuzz_bozohttpd -only_ascii=1 ./input > /dev/null
+	mkdir -p slashdir && export UBSAN_OPTIONS=halt_on_error=1 && ./fuzz_bozohttpd -only_ascii=1 ./input > /dev/null
 
 .include <bsd.prog.mk>
