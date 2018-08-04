@@ -11,7 +11,9 @@ SRCS+=	bozohttpd.c daemon-bozo.c dir-index-bozo.c content-bozo.c tilde-luzah-boz
 CFLAGS= -fsanitize=fuzzer-no-link,address,undefined -Wall -Werror -I${NETBSDSRCDIR}/libexec/httpd #-Dbozowarn=mock_bozowarn
 LDFLAGS= -fsanitize=fuzzer,address,undefined -Wall -Werror -lssl -llua
 
-fuzz: fuzz_bozohttpd
+fuzz-ascii: fuzz_bozohttpd
 	mkdir -p slashdir && export UBSAN_OPTIONS=halt_on_error=1 && ./fuzz_bozohttpd -only_ascii=1 ./input > /dev/null
+fuzz: fuzz_bozohttpd
+	mkdir -p slashdir && export UBSAN_OPTIONS=halt_on_error=1 && ./fuzz_bozohttpd ./input > /dev/null
 
 .include <bsd.prog.mk>
