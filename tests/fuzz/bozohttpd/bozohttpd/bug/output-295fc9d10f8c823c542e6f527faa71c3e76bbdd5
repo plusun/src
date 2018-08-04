@@ -1,0 +1,17 @@
+got request ``POST                               -      HTtP/1          ) -. '' from host <local> to port <stdin>
+/public/src/libexec/httpd/bozohttpd.c:708:11: runtime error: load of null pointer of type 'char'
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /public/src/libexec/httpd/bozohttpd.c:708:11 in
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==2137==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x0000002544e4 bp 0x7f7fffffe2b0 sp 0x7f7fffffcea0 T0)
+==2137==The signal is caused by a READ memory access.
+==2137==Hint: address points to the zero page.
+    #0 0x2544e3 in bozo_read_request /public/src/libexec/httpd/bozohttpd.c:708:11
+    #1 0x24d3aa in LLVMFuzzerTestOneInput /public/src/tests/fuzz/bozohttpd/bozohttpd/bug/../fuzz_bozohttpd.c:18:24
+    #2 0x24dba6 in main /public/src/tests/fuzz/bozohttpd/bozohttpd/bug/../../../main.c:24:12
+    #3 0x24d070 in ___start (/public/src/tests/fuzz/bozohttpd/bozohttpd/bug/./main+0x4d070)
+    #4 0x7f7ff7c01c7f  (/libexec/ld.elf_so+0x1c7f)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /public/src/libexec/httpd/bozohttpd.c:708:11 in bozo_read_request
+==2137==ABORTING
