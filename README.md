@@ -96,6 +96,7 @@ interceptors for:
 - [getchar(3)](http://netbsd.gw.com/cgi-bin/man-cgi?getchar+3+NetBSD-current) (Commit: [I](https://github.com/plusun/compiler-rt/commit/b33125fe5df40556082eaba922c8b2c1e78df233))
 - [setvbuf(3)](http://netbsd.gw.com/cgi-bin/man-cgi?setvbuf+3+NetBSD-current) (Commit: [I](https://github.com/plusun/compiler-rt/commit/32fedd0bbc5f626018b3ca1b347ad4a1ab29289b))
 - [mi_vector_hash(3)](http://netbsd.gw.com/cgi-bin/man-cgi?mi_vector_hash+3+NetBSD-6.0) (Commit: [I](https://github.com/plusun/compiler-rt/commit/38c8ba25ba93312b2e16e6871cfa28f69a58f7a1))
+- Some other [24 commits](https://github.com/plusun/compiler-rt/pull/1/commits).
 
 
 # [pkgsrc-wip](https://github.com/plusun/pkgsrc-wip)
