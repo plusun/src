@@ -115,5 +115,6 @@ changes are two:
 - Newly added honggfuzz package ([link](https://github.com/plusun/pkgsrc-wip/tree/gsoc2018/honggfuzz)). This package has been merged ([link](https://github.com/NetBSD/pkgsrc-wip/tree/master/honggfuzz)). There are also some changes which have been merged by the [google/honggfuzz](https://github.com/google/honggfuzz) to adapt honggfuzz to the NetBSD environment: in this [pull request](https://github.com/google/honggfuzz/pull/212).
 
 
-# Other Contribution
+# Other Contributions
 - Fixed two non-standard usages of sem_open in the libFuzzer library and one NetBSD-related modification with test script. This has been merged by the LLVM community: [D46622](https://reviews.llvm.org/D46622).
+- Trying to add "only-printable" mode for the honggfuzz. This is still an open pull request: [link](https://github.com/google/honggfuzz/pull/215).
