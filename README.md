@@ -117,4 +117,4 @@ changes are two:
 
 # Other Contributions
 - Fixed two non-standard usages of sem_open in the libFuzzer library and one NetBSD-related modification with test script. This has been merged by the LLVM community: [D46622](https://reviews.llvm.org/D46622).
-- Trying to add "only-printable" mode for the honggfuzz. This is still an open pull request: [link](https://github.com/google/honggfuzz/pull/215).
+- Added "only-printable" mode for the honggfuzz. [#215](https://github.com/google/honggfuzz/pull/215).
