@@ -1,0 +1,16 @@
+pattern: \(\)\11*$
+text:  , 0>          .AD
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==15661==ERROR: AddressSanitizer: SEGV on unknown address 0x603000010000 (pc 0x7f7ff684cf20 bp 0x7f7fffffdaf0 sp 0x7f7fffffd970 T0)
+==15661==The signal is caused by a READ memory access.
+    #0 0x7f7ff684cf1f in regexec (/usr/lib/libc.so.12+0x4cf1f)
+    #1 0x30a3b8 in __interceptor_regexec /public/llvm/projects/compiler-rt/lib/asan/../sanitizer_common/sanitizer_common_interceptors.inc:7422:9
+    #2 0x2478c9 in LLVMFuzzerTestOneInput /public/src/tests/fuzz/regex/libc/regexec/bug/../fuzz_regexec.c:43:9
+    #3 0x247be6 in main /public/src/tests/fuzz/regex/libc/regexec/bug/../../../../main.c:24:12
+    #4 0x247140 in ___start (/public/src/tests/fuzz/regex/libc/regexec/bug/./main+0x47140)
+    #5 0x7f7ff7ef8fff  (<unknown module>)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV (/usr/lib/libc.so.12+0x4cf1f) in regexec
+==15661==ABORTING
