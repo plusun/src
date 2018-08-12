@@ -1,16 +1,68 @@
-pattern: \(\)\11*$
-text:  , 0>          .AD
-AddressSanitizer:DEADLYSIGNAL
-=================================================================
-==15661==ERROR: AddressSanitizer: SEGV on unknown address 0x603000010000 (pc 0x7f7ff684cf20 bp 0x7f7fffffdaf0 sp 0x7f7fffffd970 T0)
-==15661==The signal is caused by a READ memory access.
-    #0 0x7f7ff684cf1f in regexec (/usr/lib/libc.so.12+0x4cf1f)
-    #1 0x30a3b8 in __interceptor_regexec /public/llvm/projects/compiler-rt/lib/asan/../sanitizer_common/sanitizer_common_interceptors.inc:7422:9
-    #2 0x2478c9 in LLVMFuzzerTestOneInput /public/src/tests/fuzz/regex/libc/regexec/bug/../fuzz_regexec.c:43:9
-    #3 0x247be6 in main /public/src/tests/fuzz/regex/libc/regexec/bug/../../../../main.c:24:12
-    #4 0x247140 in ___start (/public/src/tests/fuzz/regex/libc/regexec/bug/./main+0x47140)
-    #5 0x7f7ff7ef8fff  (<unknown module>)
+==6015==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000030b9d at pc 0x000000484ae2 bp 0x7f7fffffbaa0 sp 0x7f7fffffba98
+READ of size 1 at 0x602000030b9d thread T0
+    #0 0x484ae1 in sfast /public/src/lib/libc/regex/engine.c:802:30
+    #1 0x474f9b in smatcher /public/src/lib/libc/regex/engine.c:239:10
+    #2 0x4725dd in _regexec /public/src/lib/libc/regex/regexec.c:231:10
+    #3 0x42231d in LLVMFuzzerTestOneInput /public/src/tests/fuzz/regex/libc/regexec/fuzz_regexec.c:44:9
+    #4 0x4d070f in fuzzer::Fuzzer::ExecuteCallback(unsigned char const*, unsigned long) /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerLoop.cpp:526:13
+    #5 0x4d00ab in fuzzer::Fuzzer::RunOne(unsigned char const*, unsigned long, bool, fuzzer::InputInfo*, bool*) /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerLoop.cpp:451:3
+    #6 0x4d14e3 in fuzzer::Fuzzer::MutateAndTestOne() /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerLoop.cpp:657:19
+    #7 0x4d2245 in fuzzer::Fuzzer::Loop(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, fuzzer::fuzzer_allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&) /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerLoop.cpp:788:5
+    #8 0x4ca274 in fuzzer::FuzzerDriver(int*, char***, int (*)(unsigned char const*, unsigned long)) /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerDriver.cpp:758:6
+    #9 0x4ee462 in main /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerMain.cpp:20:10
+    #10 0x421890 in ___start (/public/src/tests/fuzz/regex/libc/regexec/./fuzz_regexec+0x421890)
 
-AddressSanitizer can not provide additional info.
-SUMMARY: AddressSanitizer: SEGV (/usr/lib/libc.so.12+0x4cf1f) in regexec
-==15661==ABORTING
+0x602000030b9d is located 0 bytes to the right of 13-byte region [0x602000030b90,0x602000030b9d)
+allocated by thread T0 here:
+    #0 0x5c7883 in __interceptor_malloc /public/llvm/projects/compiler-rt/lib/asan/asan_malloc_linux.cc:121:3
+    #1 0x421da8 in LLVMFuzzerTestOneInput /public/src/tests/fuzz/regex/libc/regexec/fuzz_regexec.c:22:23
+    #2 0x4d070f in fuzzer::Fuzzer::ExecuteCallback(unsigned char const*, unsigned long) /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerLoop.cpp:526:13
+    #3 0x4d00ab in fuzzer::Fuzzer::RunOne(unsigned char const*, unsigned long, bool, fuzzer::InputInfo*, bool*) /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerLoop.cpp:451:3
+    #4 0x4d14e3 in fuzzer::Fuzzer::MutateAndTestOne() /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerLoop.cpp:657:19
+    #5 0x4d2245 in fuzzer::Fuzzer::Loop(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, fuzzer::fuzzer_allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > const&) /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerLoop.cpp:788:5
+    #6 0x4ca274 in fuzzer::FuzzerDriver(int*, char***, int (*)(unsigned char const*, unsigned long)) /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerDriver.cpp:758:6
+    #7 0x4ee462 in main /public/llvm/projects/compiler-rt/lib/fuzzer/FuzzerMain.cpp:20:10
+    #8 0x421890 in ___start (/public/src/tests/fuzz/regex/libc/regexec/./fuzz_regexec+0x421890)
+    #9 0x7f7ff7ef8fff  (<unknown module>)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /public/src/lib/libc/regex/engine.c:802:30 in sfast
+Shadow bytes around the buggy address:
+  0x4c0400006120: fa fa fd fa fa fa fd fd fa fa fd fd fa fa fd fa
+  0x4c0400006130: fa fa fd fd fa fa fd fd fa fa fd fd fa fa fd fd
+  0x4c0400006140: fa fa fd fd fa fa fd fd fa fa fd fd fa fa fd fd
+  0x4c0400006150: fa fa fd fd fa fa fd fd fa fa fd fd fa fa fd fd
+  0x4c0400006160: fa fa fd fd fa fa fd fd fa fa fd fd fa fa 00 04
+=>0x4c0400006170: fa fa 00[05]fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400006180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400006190: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c04000061a0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c04000061b0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c04000061c0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==6015==ABORTING
+MS: 1 EraseBytes-; base unit: a4dce4602b8cac4ab746e905b97dc1863aa33e2b
+0x5c,0x28,0x5c,0x29,0x5c,0x31,0xa,0x20,0x20,0x77,0x5d,0xa,
+\\(\\)\\1\x0a  w]\x0a
+artifact_prefix='./'; Test unit written to ./crash-0fa2cc10dcec2563738a4b3f590873179a2dd57f
+Base64: XChcKVwxCiAgd10K
+*** Error code 1
+

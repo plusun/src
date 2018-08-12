@@ -15,6 +15,7 @@ CFLAGS= -fsanitize=address,undefined -Wall -Werror
 LDFLAGS= -fsanitize=address,undefined -Wall -Werror
 CPPFLAGS+=-g -DLOCALEDIR=\"/usr/share/locale\" -DHAVE_CONFIG_H \
           -I${IDIST}/../include -I${IDIST}/lib -Dregfree=__MKFUZZER_regfree \
-	  -Dregexec=__MKFUZZER_regexec -Dregcomp=__MKFUZZER_regcomp -Dregerror=__MKFUZZER_regerror
+	  -Dregexec=__MKFUZZER_regexec -Dregcomp=__MKFUZZER_regcomp -Dregerror=__MKFUZZER_regerror \
+	  -Wno-unused-variable -g
 
 .include <bsd.prog.mk>
