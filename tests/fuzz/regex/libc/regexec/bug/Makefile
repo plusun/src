@@ -13,6 +13,6 @@ SRCS+=	regcomp.c regerror.c regexec.c regfree.c regsub.c
 
 CFLAGS= -fsanitize=address,undefined -Wall -Werror
 LDFLAGS= -fsanitize=address,undefined -Wall -Werror
-CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include -D_REPRODUCE_
+CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include -D_REPRODUCE_ -Dregnsub=__mkfuzzer_regnsub -Dregasub=__mkfuzzer_regasub -g
 
 .include <bsd.prog.mk>
