@@ -13,9 +13,8 @@ void init(const char *d, int flag) {
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    char *d = (char *)malloc(size + 1);
+    char *d = (char *)calloc(size + 8, 1);
     memcpy(d, data, size);
-    d[size] = '\0';
     init(d, REG_BASIC | REG_NOSUB);
     free(d);
     return 0;

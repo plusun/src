@@ -1,0 +1,54 @@
+root@localhost % ./main crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+=================================================================
+==667==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000031 at pc 0x0000004cb0c5 bp 0x7f7fffffddf0 sp 0x7f7fffffd598
+READ of size 4 at 0x602000000031 thread T0
+    #0 0x4cb0c4 in __interceptor_wcslen /public/llvm/projects/compiler-rt/lib/asan/../sanitizer_common/sanitizer_common_interceptors.inc:6529:3
+    #1 0x41d8f2 in __mkfuzzer_regcomp /public/src/external/bsd/nvi/dist/regex/regcomp.c:219:9
+    #2 0x41d0ea in init /public/src/tests/fuzz/regex/nvi/regcomp/bug/../fuzz_regcomp.c:10:9
+    #3 0x41d273 in LLVMFuzzerTestOneInput /public/src/tests/fuzz/regex/nvi/regcomp/bug/../fuzz_regcomp.c:19:5
+    #4 0x41d4cb in main /public/src/tests/fuzz/regex/nvi/regcomp/bug/../../../../main.c:24:12
+    #5 0x41ceb0 in ___start (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41ceb0)
+
+0x602000000031 is located 0 bytes to the right of 1-byte region [0x602000000030,0x602000000031)
+allocated by thread T0 here:
+    #0 0x54f243 in __interceptor_malloc /public/llvm/projects/compiler-rt/lib/asan/asan_malloc_linux.cc:121:3
+    #1 0x41d17f in LLVMFuzzerTestOneInput /public/src/tests/fuzz/regex/nvi/regcomp/bug/../fuzz_regcomp.c:16:23
+    #2 0x41d4cb in main /public/src/tests/fuzz/regex/nvi/regcomp/bug/../../../../main.c:24:12
+    #3 0x41ceb0 in ___start (/public/src/tests/fuzz/regex/nvi/regcomp/bug/./main+0x41ceb0)
+    #4 0x7f7ff7c01c7f  (/libexec/ld.elf_so+0x1c7f)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /public/llvm/projects/compiler-rt/lib/asan/../sanitizer_common/sanitizer_common_interceptors.inc:6529:3 in __interceptor_wcslen
+Shadow bytes around the buggy address:
+  0x4c03ffffffb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x4c03ffffffc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x4c03ffffffd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x4c03ffffffe0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x4c03fffffff0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x4c0400000000: fa fa 01 fa fa fa[01]fa fa fa fa fa fa fa fa fa
+  0x4c0400000010: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400000020: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400000030: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400000040: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x4c0400000050: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==667==ABORTING
+
