@@ -5,6 +5,7 @@ For more details about what I have done during GSoC 2018, you can refer to these
 
 - [GSoC 2018 Reports: Integrate libFuzzer with the Basesystem, Part 1](http://blog.netbsd.org/tnf/entry/gsoc_2018_reports_integrate_libfuzzer)
 - [GSoC 2018 Reports: Integrate libFuzzer with the Basesystem, Part 2](http://blog.netbsd.org/tnf/entry/gsoc_2018_reports_integrate_libfuzzer1)
+- [GSoC 2018 Reports: Integrate libFuzzer with the Basesystem, Part 3](http://blog.netbsd.org/tnf/entry/gsoc_2018_reports_integrate_libfuzzer2)
 
 There are also other repositories/branches which are used during this project and below
 is a brief introduction for all of them.
